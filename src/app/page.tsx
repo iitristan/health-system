@@ -387,9 +387,8 @@ const Home: NextPage = () => {
               <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Parent Information</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Mother's Information */}
                 <div className="bg-gray-50 p-6 rounded-xl">
-                  <h4 className="text-lg font-medium text-gray-800 mb-4">Mother's Details</h4>
+                  <h4 className="text-lg font-medium text-gray-800 mb-4">Mother&apos;s Details</h4>
                   
                   <div className="space-y-6">
                     <div>
@@ -438,10 +437,9 @@ const Home: NextPage = () => {
                     </div>
                   </div>
                 </div>
-                
-                {/* Father's Information */}
+
                 <div className="bg-gray-50 p-6 rounded-xl">
-                  <h4 className="text-lg font-medium text-gray-800 mb-4">Father's Details</h4>
+                  <h4 className="text-lg font-medium text-gray-800 mb-4">Father&apos;s Details</h4>
                   
                   <div className="space-y-6">
                     <div>
