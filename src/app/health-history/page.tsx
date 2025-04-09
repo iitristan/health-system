@@ -158,7 +158,7 @@ export default function HealthHistoryPage() {
               <div className="p-2 border border-gray-300 rounded-md bg-gray-50">{patientInfo.middleName}</div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Today's Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Today&apos;s Date</label>
               <div className="p-2 border border-gray-300 rounded-md bg-gray-50">{patientInfo.todaysDate}</div>
             </div>
             <div>

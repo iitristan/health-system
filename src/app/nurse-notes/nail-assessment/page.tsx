@@ -480,7 +480,7 @@ const NailAssessmentPage: NextPage = () => {
                       </td>
                     </tr>
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Beau's lines (transverse depressions)</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Beau&apos;s lines (transverse depressions)</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex space-x-4">
                           <label className="flex items-center">

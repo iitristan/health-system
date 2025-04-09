@@ -739,7 +739,7 @@ export default function HealthAssessment() {
 
         {/* Child's Eating Behavior & Habits */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Child's Eating Behavior & Habits</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Child&apos;s Eating Behavior & Habits</h3>
           
           <div className="space-y-4">
             <div>
@@ -817,7 +817,7 @@ export default function HealthAssessment() {
 
         {/* Child's Emotional & Mental Health */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Child's Emotional & Mental Health</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Child&apos;s Emotional & Mental Health</h3>
           
           <div className="space-y-4">
             <div>
