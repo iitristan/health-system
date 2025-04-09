@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import type { NextPage } from 'next';
 
-const Home: NextPage = () => {
+const PatientInformation: NextPage = () => {
   const [formData, setFormData] = useState({
     todayDate: '',
     signature: '',
@@ -565,4 +565,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default PatientInformation;
