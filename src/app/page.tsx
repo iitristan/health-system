@@ -2,6 +2,17 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ReactNode } from 'react';
+
+interface DashboardCardProps {
+  title: string;
+  description?: string;
+  onClick?: () => void;
+  icon?: ReactNode;
+  color?: string;
+  children?: ReactNode;
+}
+
 
 export default function EHRDashboard() {
   const router = useRouter();
@@ -120,7 +131,7 @@ export default function EHRDashboard() {
 }
 
 // Reusable Card Component
-function DashboardCard({ title, description, onClick, icon, color, children }: any) {
+function DashboardCard({ title, description, onClick, icon, color, children }: DashboardCardProps) {
   return (
     <div 
       className={`rounded-lg shadow-md overflow-hidden cursor-pointer transition-all hover:shadow-lg ${color}`}
