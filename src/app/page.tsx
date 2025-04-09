@@ -56,14 +56,6 @@ export default function EHRDashboard() {
             color="bg-green-99"
           />
           
-          {/* Anemia Tracker */}
-          <DashboardCard 
-            title="Anemia Tracker"
-            description="Monitor hemoglobin levels and anemia indicators"
-            onClick={() => router.push('/anemia-tracker')}
-            icon={<DropletIcon />}
-            color="bg-purple-99"
-          />
           
           {/* Health Assessment */}
           <DashboardCard 
