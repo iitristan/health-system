@@ -68,7 +68,7 @@ const EmergencyResponsePage: NextPage = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Patient's Current Condition</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Patient&apos;s Current Condition</label>
                     <textarea
                       name="patientCondition"
                       value={formData.patientCondition}

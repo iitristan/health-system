@@ -82,7 +82,7 @@ export default function EHRDashboard() {
           
           {/* Nurse's Notes */}
           <DashboardCard 
-            title="Nurse's Notes"
+            title="Nurse&apos;s Notes"
             description="Clinical observations and assessments"
        
             icon={<NotebookIcon />}
