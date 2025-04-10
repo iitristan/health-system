@@ -29,26 +29,6 @@ interface FormData {
   };
 }
 
-type FeedingDifficultyType = 'difficultyChewing' | 'difficultySwallowing' | 'choking' | 'gagging' | 'vomiting' | 'regurgitation' | 'coughing' | 'drooling' | 'pocketingFood' | 'refusingFood' | 'slowEating' | 'fastEating' | 'overeating' | 'undereating' | 'pickyEating' | 'foodAllergies' | 'foodIntolerances' | 'otherFeedingDifficulties';
-
-type EmotionalDistressType = 'anxiety' | 'depression' | 'anger' | 'fear' | 'sadness' | 'guilt' | 'shame' | 'hopelessness' | 'helplessness' | 'worthlessness' | 'loneliness' | 'isolation' | 'otherEmotionalDistress';
-
-interface SurgicalHistory {
-  surgery: string;
-  date: string;
-  complications: boolean;
-  notes: string;
-}
-
-interface Medication {
-  name: string;
-  dosage: string;
-  frequency: string;
-  startDate: string;
-  endDate: string;
-  notes: string;
-}
-
 export default function HealthAssessmentPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -248,19 +228,24 @@ export default function HealthAssessmentPage() {
 
   // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: checked,
-    }));
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    
+    if (type === 'checkbox') {
+      const [parent, child] = name.split('.');
+      setFormData(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent as keyof FormData],
+          [child]: checked
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleArrayChange = (path: string, value: string) => {
@@ -292,74 +277,6 @@ export default function HealthAssessmentPage() {
     e.preventDefault();
     console.log('Form submitted:', formData);
     // Add your form submission logic here
-  };
-
-  const handleFeedingDifficultyChange = (type: FeedingDifficultyType) => {
-    setFormData((prev) => ({
-      ...prev,
-      feedingDifficulties: {
-        ...prev.feedingDifficulties,
-        [type]: !prev.feedingDifficulties[type],
-      },
-    }));
-  };
-
-  const handleEmotionalDistressChange = (type: EmotionalDistressType) => {
-    setFormData((prev) => ({
-      ...prev,
-      emotionalDistress: {
-        ...prev.emotionalDistress,
-        [type]: !prev.emotionalDistress[type],
-      },
-    }));
-  };
-
-  const handleFoodInsecurityChange = (type: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      foodInsecurity: {
-        ...prev.foodInsecurity,
-        [type]: !prev.foodInsecurity[type as keyof typeof prev.foodInsecurity],
-      },
-    }));
-  };
-
-  const handleSurgicalHistoryChange = (index: number, field: keyof SurgicalHistory) => {
-    setFormData((prev) => ({
-      ...prev,
-      surgicalHistory: prev.surgicalHistory.map((item, i) =>
-        i === index ? { ...item, [field]: !item[field] } : item
-      ),
-    }));
-  };
-
-  const handleMedicationChange = (index: number, field: keyof Medication) => {
-    setFormData((prev) => ({
-      ...prev,
-      medications: prev.medications.map((item, i) =>
-        i === index ? { ...item, [field]: !item[field] } : item
-      ),
-    }));
-  };
-
-  const handleHealthMaintenanceChange = (type: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      healthMaintenance: {
-        ...prev.healthMaintenance,
-        [type]: !prev.healthMaintenance[type as keyof typeof prev.healthMaintenance],
-      },
-    }));
-  };
-
-  const handleImmunizationChange = (type: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      immunizations: {
-        ...prev.immunizations,
-        [type]: !prev.immunizations[type as keyof typeof prev.immunizations],
-      },
-    }));
   };
 
   return (
