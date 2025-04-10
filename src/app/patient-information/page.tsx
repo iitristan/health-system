@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import type { NextPage } from 'next';
-import { supabase } from '@/lib/supabaseClient';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 interface Sibling {
   name: string;
@@ -38,46 +38,46 @@ interface PatientFormData {
   todayDate: string;
 }
 
-const PatientInformation: NextPage = () => {
+function PatientInformationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");
 
   const [formData, setFormData] = useState<PatientFormData>({
-    fullName: '',
-    dateOfBirth: '',
-    age: '',
-    gender: '',
-    maritalStatus: '',
-    employmentStatus: '',
-    ethnicity: '',
-    address1: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    mobilePhone: '',
-    email: '',
-    signature: '',
-    motherName: '',
-    motherDateOfBirth: '',
-    motherAge: '',
-    motherOccupation: '',
-    fatherName: '',
-    fatherDateOfBirth: '',
-    fatherAge: '',
-    fatherOccupation: '',
-    siblingsCount: '0',
+    fullName: "",
+    dateOfBirth: "",
+    age: "",
+    gender: "",
+    maritalStatus: "",
+    employmentStatus: "",
+    ethnicity: "",
+    address1: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    mobilePhone: "",
+    email: "",
+    signature: "",
+    motherName: "",
+    motherDateOfBirth: "",
+    motherAge: "",
+    motherOccupation: "",
+    fatherName: "",
+    fatherDateOfBirth: "",
+    fatherAge: "",
+    fatherOccupation: "",
+    siblingsCount: "0",
     siblings: [],
-    todayDate: '',
+    todayDate: "",
   });
 
   // Set current date and fetch patient data if available
   useEffect(() => {
     const today = new Date();
-    const formattedDate = today.toISOString().split('T')[0];
-    setFormData(prev => ({
+    const formattedDate = today.toISOString().split("T")[0];
+    setFormData((prev) => ({
       ...prev,
-      todayDate: formattedDate
+      todayDate: formattedDate,
     }));
 
     const fetchPatientData = async () => {
@@ -92,35 +92,36 @@ const PatientInformation: NextPage = () => {
           if (error) throw error;
 
           if (data) {
-            setFormData(prev => ({
+            setFormData((prev) => ({
               ...prev,
-              fullName: data.full_name || '',
-              dateOfBirth: data.date_of_birth || '',
-              age: data.age?.toString() || '',
-              gender: data.gender || '',
-              maritalStatus: data.marital_status || '',
-              employmentStatus: data.employment_status || '',
-              ethnicity: data.ethnicity || '',
-              address1: data.address1 || '',
-              city: data.city || '',
-              state: data.state || '',
-              zipCode: data.zip_code || '',
-              mobilePhone: data.mobile_phone || '',
-              email: data.email || '',
-              signature: data.signature || '',
-              motherName: data.mother_name || '',
-              motherDateOfBirth: data.mother_date_of_birth || '',
-              motherAge: data.mother_age?.toString() || '',
-              motherOccupation: data.mother_occupation || '',
-              fatherName: data.father_name || '',
-              fatherDateOfBirth: data.father_date_of_birth || '',
-              fatherAge: data.father_age?.toString() || '',
-              fatherOccupation: data.father_occupation || '',
-              siblingsCount: data.siblings_count?.toString() || '0',
-              siblings: data.siblings_names?.map((name: string, index: number) => ({
-                name,
-                age: (data.siblings_ages?.[index] || '').toString()
-              })) || []
+              fullName: data.full_name || "",
+              dateOfBirth: data.date_of_birth || "",
+              age: data.age?.toString() || "",
+              gender: data.gender || "",
+              maritalStatus: data.marital_status || "",
+              employmentStatus: data.employment_status || "",
+              ethnicity: data.ethnicity || "",
+              address1: data.address1 || "",
+              city: data.city || "",
+              state: data.state || "",
+              zipCode: data.zip_code || "",
+              mobilePhone: data.mobile_phone || "",
+              email: data.email || "",
+              signature: data.signature || "",
+              motherName: data.mother_name || "",
+              motherDateOfBirth: data.mother_date_of_birth || "",
+              motherAge: data.mother_age?.toString() || "",
+              motherOccupation: data.mother_occupation || "",
+              fatherName: data.father_name || "",
+              fatherDateOfBirth: data.father_date_of_birth || "",
+              fatherAge: data.father_age?.toString() || "",
+              fatherOccupation: data.father_occupation || "",
+              siblingsCount: data.siblings_count?.toString() || "0",
+              siblings:
+                data.siblings_names?.map((name: string, index: number) => ({
+                  name,
+                  age: (data.siblings_ages?.[index] || "").toString(),
+                })) || [],
             }));
           }
         } catch (error) {
@@ -132,40 +133,46 @@ const PatientInformation: NextPage = () => {
     fetchPatientData();
   }, [patientName]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleSiblingChange = (index: number, field: keyof Sibling, value: string) => {
+  const handleSiblingChange = (
+    index: number,
+    field: keyof Sibling,
+    value: string
+  ) => {
     const updatedSiblings = [...formData.siblings];
     updatedSiblings[index] = {
       ...updatedSiblings[index],
-      [field]: value
+      [field]: value,
     };
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      siblings: updatedSiblings
+      siblings: updatedSiblings,
     }));
   };
 
   const addSibling = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      siblings: [...prev.siblings, { name: '', age: '' }],
-      siblingsCount: (parseInt(prev.siblingsCount) + 1).toString()
+      siblings: [...prev.siblings, { name: "", age: "" }],
+      siblingsCount: (parseInt(prev.siblingsCount) + 1).toString(),
     }));
   };
 
   const removeSibling = (index: number) => {
     const updatedSiblings = formData.siblings.filter((_, i) => i !== index);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       siblings: updatedSiblings,
-      siblingsCount: updatedSiblings.length.toString()
+      siblingsCount: updatedSiblings.length.toString(),
     }));
   };
 
@@ -173,7 +180,9 @@ const PatientInformation: NextPage = () => {
     e.preventDefault();
     try {
       if (!formData.fullName || !formData.dateOfBirth) {
-        alert("Please fill in all required fields (Full Name and Date of Birth)");
+        alert(
+          "Please fill in all required fields (Full Name and Date of Birth)"
+        );
         return;
       }
 
@@ -187,7 +196,9 @@ const PatientInformation: NextPage = () => {
         if (checkError) throw checkError;
 
         if (existingPatients && existingPatients.length > 0) {
-          alert(`A patient with the name "${formData.fullName}" already exists. Please use a different name.`);
+          alert(
+            `A patient with the name "${formData.fullName}" already exists. Please use a different name.`
+          );
           return;
         }
       }
@@ -216,8 +227,10 @@ const PatientInformation: NextPage = () => {
         father_age: formData.fatherAge ? parseInt(formData.fatherAge) : null,
         father_occupation: formData.fatherOccupation || null,
         siblings_count: formData.siblings.length,
-        siblings_names: formData.siblings.map(sibling => sibling.name),
-        siblings_ages: formData.siblings.map(sibling => parseInt(sibling.age))
+        siblings_names: formData.siblings.map((sibling) => sibling.name),
+        siblings_ages: formData.siblings.map((sibling) =>
+          parseInt(sibling.age)
+        ),
       };
 
       if (patientName) {
@@ -240,7 +253,9 @@ const PatientInformation: NextPage = () => {
       }
     } catch (error) {
       console.error("Error saving patient information:", error);
-      alert("Failed to save patient information. Please check all required fields and try again.");
+      alert(
+        "Failed to save patient information. Please check all required fields and try again."
+      );
     }
   };
 
@@ -249,18 +264,33 @@ const PatientInformation: NextPage = () => {
       <div className="bg-indigo-800 py-6 px-6 shadow-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push("/")}
             className="p-2 text-white hover:bg-indigo-700 rounded-md transition-colors"
             title="Go to Home"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
             </svg>
           </button>
 
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-white">Electronic Health Record</h1>
-            <p className="mt-1 text-lg text-indigo-200">Patient Information System</p>
+            <h1 className="text-3xl font-bold text-white">
+              Electronic Health Record
+            </h1>
+            <p className="mt-1 text-lg text-indigo-200">
+              Patient Information System
+            </p>
           </div>
 
           <button
@@ -268,8 +298,19 @@ const PatientInformation: NextPage = () => {
             className="p-2 text-white hover:bg-indigo-700 rounded-md transition-colors"
             title="Go Back"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
             </svg>
           </button>
         </div>
@@ -279,17 +320,23 @@ const PatientInformation: NextPage = () => {
         {/* Patient Information Form */}
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           <div className="bg-indigo-700 px-8 py-5">
-            <h2 className="text-2xl font-semibold text-white">Patient Demographics Form</h2>
+            <h2 className="text-2xl font-semibold text-white">
+              Patient Demographics Form
+            </h2>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 space-y-10">
             <section>
-              <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Basic Information</h3>
-              
+              <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
+                Basic Information
+              </h3>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name
+                    </label>
                     <input
                       type="text"
                       name="fullName"
@@ -299,9 +346,11 @@ const PatientInformation: NextPage = () => {
                       required
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Date of Birth
+                    </label>
                     <input
                       type="date"
                       name="dateOfBirth"
@@ -311,9 +360,11 @@ const PatientInformation: NextPage = () => {
                       required
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Address
+                    </label>
                     <input
                       type="text"
                       name="address1"
@@ -323,10 +374,12 @@ const PatientInformation: NextPage = () => {
                       required
                     />
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        City
+                      </label>
                       <input
                         type="text"
                         name="city"
@@ -337,7 +390,9 @@ const PatientInformation: NextPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        State
+                      </label>
                       <input
                         type="text"
                         name="state"
@@ -349,7 +404,9 @@ const PatientInformation: NextPage = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      ZIP Code
+                    </label>
                     <input
                       type="text"
                       name="zipCode"
@@ -360,10 +417,12 @@ const PatientInformation: NextPage = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Phone</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Mobile Phone
+                    </label>
                     <input
                       type="tel"
                       name="mobilePhone"
@@ -373,9 +432,11 @@ const PatientInformation: NextPage = () => {
                       required
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email Address
+                    </label>
                     <input
                       type="email"
                       name="email"
@@ -384,9 +445,11 @@ const PatientInformation: NextPage = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Signature</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Signature
+                    </label>
                     <input
                       type="text"
                       name="signature"
@@ -401,12 +464,16 @@ const PatientInformation: NextPage = () => {
 
             {/* Section 2: Personal Details */}
             <section>
-              <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Personal Details</h3>
-              
+              <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
+                Personal Details
+              </h3>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Gender
+                    </label>
                     <div className="space-y-3">
                       <label className="flex items-center space-x-3">
                         <input
@@ -445,10 +512,12 @@ const PatientInformation: NextPage = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Marital Status</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Marital Status
+                    </label>
                     <div className="space-y-3">
                       <label className="flex items-center space-x-3">
                         <input
@@ -478,7 +547,9 @@ const PatientInformation: NextPage = () => {
 
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Employment Status</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Employment Status
+                    </label>
                     <div className="space-y-3">
                       <label className="flex items-center space-x-3">
                         <input
@@ -489,7 +560,9 @@ const PatientInformation: NextPage = () => {
                           onChange={handleInputChange}
                           className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                         />
-                        <span className="text-sm text-gray-700">Employed</span>
+                        <span className="text-sm text-gray-700">
+                          Employed
+                        </span>
                       </label>
                       <label className="flex items-center space-x-3">
                         <input
@@ -511,7 +584,9 @@ const PatientInformation: NextPage = () => {
                           onChange={handleInputChange}
                           className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                         />
-                        <span className="text-sm text-gray-700">Unemployed</span>
+                        <span className="text-sm text-gray-700">
+                          Unemployed
+                        </span>
                       </label>
                     </div>
                   </div>
@@ -521,14 +596,20 @@ const PatientInformation: NextPage = () => {
 
             {/* Section 3: Parent Information */}
             <section>
-              <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Parent Information</h3>
-              
+              <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
+                Parent Information
+              </h3>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
-                  <h4 className="text-lg font-medium text-gray-700">Mother&apos;s Information</h4>
-                  
+                  <h4 className="text-lg font-medium text-gray-700">
+                    Mother&apos;s Information
+                  </h4>
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Mother&apos;s Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Mother&apos;s Name
+                    </label>
                     <input
                       type="text"
                       name="motherName"
@@ -537,9 +618,11 @@ const PatientInformation: NextPage = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Mother&apos;s Date of Birth</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Mother&apos;s Date of Birth
+                    </label>
                     <input
                       type="date"
                       name="motherDateOfBirth"
@@ -548,9 +631,11 @@ const PatientInformation: NextPage = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Mother&apos;s Age</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Mother&apos;s Age
+                    </label>
                     <input
                       type="number"
                       name="motherAge"
@@ -559,9 +644,11 @@ const PatientInformation: NextPage = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Mother&apos;s Occupation</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Mother&apos;s Occupation
+                    </label>
                     <input
                       type="text"
                       name="motherOccupation"
@@ -573,10 +660,14 @@ const PatientInformation: NextPage = () => {
                 </div>
 
                 <div className="space-y-6">
-                  <h4 className="text-lg font-medium text-gray-700">Father&apos;s Information</h4>
-                  
+                  <h4 className="text-lg font-medium text-gray-700">
+                    Father&apos;s Information
+                  </h4>
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Father&apos;s Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Father&apos;s Name
+                    </label>
                     <input
                       type="text"
                       name="fatherName"
@@ -585,9 +676,11 @@ const PatientInformation: NextPage = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Father&apos;s Date of Birth</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Father&apos;s Date of Birth
+                    </label>
                     <input
                       type="date"
                       name="fatherDateOfBirth"
@@ -596,9 +689,11 @@ const PatientInformation: NextPage = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Father&apos;s Age</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Father&apos;s Age
+                    </label>
                     <input
                       type="number"
                       name="fatherAge"
@@ -607,9 +702,11 @@ const PatientInformation: NextPage = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Father&apos;s Occupation</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Father&apos;s Occupation
+                    </label>
                     <input
                       type="text"
                       name="fatherOccupation"
@@ -625,7 +722,9 @@ const PatientInformation: NextPage = () => {
             {/* Section 4: Siblings Information */}
             <section>
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-semibold text-gray-800">Siblings Information</h3>
+                <h3 className="text-xl font-semibold text-gray-800">
+                  Siblings Information
+                </h3>
                 <button
                   type="button"
                   onClick={addSibling}
@@ -634,12 +733,14 @@ const PatientInformation: NextPage = () => {
                   Add Sibling
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 {formData.siblings.map((sibling, index) => (
                   <div key={index} className="bg-gray-50 p-6 rounded-xl">
                     <div className="flex justify-between items-center mb-4">
-                      <h4 className="text-md font-medium text-gray-800">Sibling #{index + 1}</h4>
+                      <h4 className="text-md font-medium text-gray-800">
+                        Sibling #{index + 1}
+                      </h4>
                       <button
                         type="button"
                         onClick={() => removeSibling(index)}
@@ -648,23 +749,31 @@ const PatientInformation: NextPage = () => {
                         Remove
                       </button>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Full Name
+                        </label>
                         <input
                           type="text"
-                          value={sibling.name || ''}
-                          onChange={(e) => handleSiblingChange(index, 'name', e.target.value)}
+                          value={sibling.name || ""}
+                          onChange={(e) =>
+                            handleSiblingChange(index, "name", e.target.value)
+                          }
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Age
+                        </label>
                         <input
                           type="number"
-                          value={sibling.age || ''}
-                          onChange={(e) => handleSiblingChange(index, 'age', e.target.value)}
+                          value={sibling.age || ""}
+                          onChange={(e) =>
+                            handleSiblingChange(index, "age", e.target.value)
+                          }
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                         />
                       </div>
@@ -678,7 +787,7 @@ const PatientInformation: NextPage = () => {
             <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
               <button
                 type="button"
-                onClick={() => router.push('/')}
+                onClick={() => router.push("/")}
                 className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Cancel
@@ -696,56 +805,110 @@ const PatientInformation: NextPage = () => {
         {/* Navigation Buttons */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <button
-            onClick={() => router.push(`/vital-signs?patient=${encodeURIComponent(formData.fullName)}`)}
+            onClick={() =>
+              router.push(
+                `/vital-signs?patient=${encodeURIComponent(
+                  formData.fullName
+                )}`
+              )
+            }
             className="flex items-center justify-center px-4 py-3 bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
           >
             <span className="text-xl mr-2">❤️</span>
-            <span className="text-sm font-medium text-gray-900">Vital Signs</span>
+            <span className="text-sm font-medium text-gray-900">
+              Vital Signs
+            </span>
           </button>
-          
+
           <button
-            onClick={() => router.push(`/health-history?patient=${encodeURIComponent(formData.fullName)}`)}
+            onClick={() =>
+              router.push(
+                `/health-history?patient=${encodeURIComponent(
+                  formData.fullName
+                )}`
+              )
+            }
             className="flex items-center justify-center px-4 py-3 bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
           >
             <span className="text-xl mr-2">📜</span>
-            <span className="text-sm font-medium text-gray-900">Health History</span>
+            <span className="text-sm font-medium text-gray-900">
+              Health History
+            </span>
           </button>
-          
+
           <button
-            onClick={() => router.push(`/health-assessment?patient=${encodeURIComponent(formData.fullName)}`)}
+            onClick={() =>
+              router.push(
+                `/health-assessment?patient=${encodeURIComponent(
+                  formData.fullName
+                )}`
+              )
+            }
             className="flex items-center justify-center px-4 py-3 bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
           >
             <span className="text-xl mr-2">📋</span>
-            <span className="text-sm font-medium text-gray-900">Health Assessment</span>
+            <span className="text-sm font-medium text-gray-900">
+              Health Assessment
+            </span>
           </button>
-          
+
           <button
-            onClick={() => router.push(`/medication-admin?patient=${encodeURIComponent(formData.fullName)}`)}
+            onClick={() =>
+              router.push(
+                `/medication-admin?patient=${encodeURIComponent(
+                  formData.fullName
+                )}`
+              )
+            }
             className="flex items-center justify-center px-4 py-3 bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
           >
             <span className="text-xl mr-2">💊</span>
-            <span className="text-sm font-medium text-gray-900">Medication Administration</span>
+            <span className="text-sm font-medium text-gray-900">
+              Medication Administration
+            </span>
           </button>
-          
+
           <button
-            onClick={() => router.push(`/nurse-notes/nurses-notes?patient=${encodeURIComponent(formData.fullName)}`)}
+            onClick={() =>
+              router.push(
+                `/nurse-notes/nurses-notes?patient=${encodeURIComponent(
+                  formData.fullName
+                )}`
+              )
+            }
             className="flex items-center justify-center px-4 py-3 bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
           >
             <span className="text-xl mr-2">📓</span>
-            <span className="text-sm font-medium text-gray-900">Nurse&apos;s Notes</span>
+            <span className="text-sm font-medium text-gray-900">
+              Nurse&apos;s Notes
+            </span>
           </button>
-          
+
           <button
-            onClick={() => router.push(`/services/extensive-medical-assistance?patient=${encodeURIComponent(formData.fullName)}`)}
+            onClick={() =>
+              router.push(
+                `/services/extensive-medical-assistance?patient=${encodeURIComponent(
+                  formData.fullName
+                )}`
+              )
+            }
             className="flex items-center justify-center px-4 py-3 bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
           >
             <span className="text-xl mr-2">🏥</span>
-            <span className="text-sm font-medium text-gray-900">Request Medical Assistance</span>
+            <span className="text-sm font-medium text-gray-900">
+              Request Medical Assistance
+            </span>
           </button>
         </div>
       </div>
     </div>
   );
-};
+}
 
-export default PatientInformation;
+export default function PatientInformationWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PatientInformationPage />
+    </Suspense>
+  );
+}
