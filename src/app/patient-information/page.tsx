@@ -525,10 +525,10 @@ const PatientInformation: NextPage = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
-                  <h4 className="text-lg font-medium text-gray-700">Mother's Information</h4>
+                  <h4 className="text-lg font-medium text-gray-700">Mother&apos;s Information</h4>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Mother's Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Mother&apos;s Name</label>
                     <input
                       type="text"
                       name="motherName"
@@ -539,7 +539,7 @@ const PatientInformation: NextPage = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Mother's Date of Birth</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Mother&apos;s Date of Birth</label>
                     <input
                       type="date"
                       name="motherDateOfBirth"
@@ -550,7 +550,7 @@ const PatientInformation: NextPage = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Mother's Age</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Mother&apos;s Age</label>
                     <input
                       type="number"
                       name="motherAge"
@@ -561,7 +561,7 @@ const PatientInformation: NextPage = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Mother's Occupation</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Mother&apos;s Occupation</label>
                     <input
                       type="text"
                       name="motherOccupation"
@@ -573,10 +573,10 @@ const PatientInformation: NextPage = () => {
                 </div>
 
                 <div className="space-y-6">
-                  <h4 className="text-lg font-medium text-gray-700">Father's Information</h4>
+                  <h4 className="text-lg font-medium text-gray-700">Father&apos;s Information</h4>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Father's Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Father&apos;s Name</label>
                     <input
                       type="text"
                       name="fatherName"
@@ -587,7 +587,7 @@ const PatientInformation: NextPage = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Father's Date of Birth</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Father&apos;s Date of Birth</label>
                     <input
                       type="date"
                       name="fatherDateOfBirth"
@@ -598,7 +598,7 @@ const PatientInformation: NextPage = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Father's Age</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Father&apos;s Age</label>
                     <input
                       type="number"
                       name="fatherAge"
@@ -609,7 +609,7 @@ const PatientInformation: NextPage = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Father's Occupation</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Father&apos;s Occupation</label>
                     <input
                       type="text"
                       name="fatherOccupation"
