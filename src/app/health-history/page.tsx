@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+
 
 interface FormData {
   chiefComplaint: string;
@@ -28,7 +29,19 @@ interface FormData {
   };
 }
 
-export default function HealthHistoryPage() {
+
+
+export default function HealthHistoryWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HealthHistoryPage />
+    </Suspense>
+  );
+}
+
+
+
+function HealthHistoryPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const patientName = searchParams.get("patient");
