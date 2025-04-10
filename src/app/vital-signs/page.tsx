@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 
 interface VitalSign {
   dateTime: string;
@@ -30,7 +31,15 @@ interface NewVitalSign {
   comments: string;
 }
 
-export default function VitalSignsPage() {
+export default function VitalSignsWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <VitalSignsPage />
+    </Suspense>
+  );
+}
+
+function VitalSignsPage() {
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");
   const router = useRouter();
