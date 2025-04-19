@@ -329,7 +329,7 @@ function MedicationAdministrationPage() {
     e.preventDefault();
 
     if (!selectedNurse) {
-      alert("Please select a nurse/physician first");
+      alert("Please select a staff/physician first");
       return;
     }
 

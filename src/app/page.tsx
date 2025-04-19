@@ -250,7 +250,7 @@ export default function EHRDashboard() {
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-yellow-800">Important Notice</h3>
                 <div className="mt-2 text-sm text-yellow-700">
-                  <p>Please select a nurse from the list before accessing any forms or services. This selection will be used for:</p>
+                  <p>Please select a staff from the list before accessing any forms or services. This selection will be used for:</p>
                   <ul className="mt-2 list-disc list-inside">
                     <li>Form authentication and signing</li>
                     <li>Tracking medical records</li>
@@ -372,7 +372,7 @@ export default function EHRDashboard() {
                 {!selectedNurse && (
                   <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                     <p className="text-sm text-yellow-800">
-                      Please select a nurse before accessing any forms. This will be used for signing and authentication.
+                      Please select a staff before accessing any forms. This will be used for signing and authentication.
                     </p>
                   </div>
                 )}
@@ -697,7 +697,7 @@ function DashboardCard({
             <p className="mt-1 text-sm text-gray-500">{description}</p>
             {!selectedNurse && (
               <p className="mt-2 text-sm text-yellow-600">
-                Please select a nurse to access this feature
+                Please select a staff to access this feature
               </p>
             )}
           </div>

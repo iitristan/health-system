@@ -850,7 +850,7 @@ Referral is indicated if:
 
     if (!selectedNurse) {
       setError(
-        "Please select a nurse from the profile page before saving vital signs."
+        "Please select a staff from the profile page before saving vital signs."
       );
       return;
     }

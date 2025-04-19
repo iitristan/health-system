@@ -311,7 +311,7 @@ const NailAssessmentPageContent = () => {
   // Only redirect if we're on the main page without a patient
   useEffect(() => {
     if (!selectedNurse && !patientName) {
-      alert("Please select a nurse from the dashboard first.");
+      alert("Please select a staff from the dashboard first.");
       router.push("/");
     }
   }, [selectedNurse, patientName, router]);
@@ -452,7 +452,7 @@ const NailAssessmentPageContent = () => {
 
     if (!selectedNurse) {
       alert(
-        "No nurse selected. Please select a nurse from the dashboard first."
+        "No nurse selected. Please select a staff from the dashboard first."
       );
       return;
     }

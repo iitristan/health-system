@@ -148,7 +148,7 @@ function PsychosocialBehavioralPage() {
   // Only redirect if we're on the main page without a patient
   useEffect(() => {
     if (!selectedNurse && !patientName) {
-      alert("Please select a nurse from the dashboard first.");
+      alert("Please select a staff from the dashboard first.");
       router.push("/");
     }
   }, [selectedNurse, patientName, router]);
@@ -286,7 +286,7 @@ function PsychosocialBehavioralPage() {
     }
 
     if (!selectedNurse) {
-      alert("No nurse selected. Please select a nurse from the dashboard first.");
+      alert("No nurse selected. Please select a staff from the dashboard first.");
       return;
     }
 

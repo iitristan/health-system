@@ -261,7 +261,7 @@ const NurseNotesPageContent = () => {
     }
 
     if (!selectedNurse) {
-      alert("Please select a nurse first");
+      alert("Please select a staff first");
       return;
     }
 

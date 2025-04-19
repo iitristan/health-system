@@ -152,7 +152,7 @@ function HealthAssessmentPage() {
   // Only redirect if we're on the main health assessment page without a patient
   useEffect(() => {
     if (!selectedNurse && !patientName) {
-      alert("Please select a nurse from the dashboard first.");
+      alert("Please select a staff from the dashboard first.");
       router.push("/");
     }
   }, [selectedNurse, patientName, router]);
@@ -217,7 +217,7 @@ function HealthAssessmentPage() {
 
     if (!selectedNurse) {
       alert(
-        "No nurse selected. Please select a nurse from the dashboard first."
+        "No staff selected. Please select a staff from the dashboard first."
       );
       return;
     }
@@ -262,7 +262,7 @@ function HealthAssessmentPage() {
   // Handle navigation to other pages
   const handleNavigation = (path: string) => {
     if (!selectedNurse) {
-      alert("Please select a nurse from the dashboard first.");
+      alert("Please select a staff from the dashboard first.");
       router.push("/");
       return;
     }

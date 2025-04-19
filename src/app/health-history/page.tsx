@@ -404,7 +404,7 @@ function HealthHistoryPage() {
     }
 
     if (!selectedNurse) {
-      alert("No nurse selected. Please select a nurse in the profile section.");
+      alert("No nurse selected. Please select a staff in the profile section.");
       return;
     }
 

@@ -323,7 +323,7 @@ const PhysicalHealthPageContent = () => {
   // Only redirect if we're on the main physical health page without a patient
   useEffect(() => {
     if (!selectedNurse && !patientName) {
-      alert("Please select a nurse from the dashboard first.");
+      alert("Please select a staff from the dashboard first.");
       router.push("/");
     }
   }, [selectedNurse, patientName, router]);
@@ -516,7 +516,7 @@ const PhysicalHealthPageContent = () => {
     }
 
     if (!selectedNurse) {
-      alert("No nurse selected. Please select a nurse from the dashboard first.");
+      alert("No nurse selected. Please select a staff from the dashboard first.");
       return;
     }
 
