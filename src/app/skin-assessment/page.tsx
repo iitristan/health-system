@@ -257,6 +257,14 @@ interface FormData {
 }
 
 const SkinAssessmentPage: NextPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SkinAssessmentPageContent />
+    </Suspense>
+  );
+};
+
+const SkinAssessmentPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");

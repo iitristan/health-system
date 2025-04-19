@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useSession } from "@/app/context/SessionContext";
+import { Suspense } from "react";
+import { NextPage } from "next";
 
 interface MedicalCheckupRecord {
   id: string;
@@ -20,7 +22,14 @@ interface MedicalCheckupRecord {
   created_at: string;
 }
 
-const MedicalCheckupPage = () => {
+const MedicalCheckupPage: NextPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MedicalCheckupPageContent />
+    </Suspense>
+  );
+};
+const MedicalCheckupPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");

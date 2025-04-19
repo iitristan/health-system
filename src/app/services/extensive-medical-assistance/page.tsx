@@ -5,6 +5,7 @@ import type { NextPage } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useSession } from "@/app/context/SessionContext";
+import { Suspense } from "react";
 
 interface MedicalAssistanceRecord {
   id: string;
@@ -22,6 +23,13 @@ interface MedicalAssistanceRecord {
 }
 
 const ExtensiveMedicalAssistancePage: NextPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ExtensiveMedicalAssistancePageContent />
+    </Suspense>
+  );
+};
+const ExtensiveMedicalAssistancePageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");

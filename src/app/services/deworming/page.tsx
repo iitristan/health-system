@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import type { NextPage } from 'next';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
-import { useSession } from '@/app/context/SessionContext';
+import { useState, useEffect } from "react";
+import type { NextPage } from "next";
+import { useRouter, useSearchParams } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
+import { useSession } from "@/app/context/SessionContext";
+import { Suspense } from "react";
 
 interface DewormingRecord {
   id: string;
@@ -21,34 +22,45 @@ interface DewormingRecord {
 }
 
 const DewormingPage: NextPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DewormingPageContent />
+    </Suspense>
+  );
+};
+const DewormingPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");
   const { selectedNurse } = useSession();
-  const [patients, setPatients] = useState<Array<{ full_name: string; age: number; gender: string }>>([]);
+  const [patients, setPatients] = useState<
+    Array<{ full_name: string; age: number; gender: string }>
+  >([]);
   const [selectedPatient, setSelectedPatient] = useState(patientName || "");
   const [error, setError] = useState<string | null>(null);
-  const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
+  const [currentDate, setCurrentDate] = useState(
+    new Date().toLocaleDateString()
+  );
   const [records, setRecords] = useState<DewormingRecord[]>([]);
 
   const [formData, setFormData] = useState({
-    date: '',
-    time: '',
-    weight: '',
-    height: '',
-    previousDeworming: '',
-    allergies: '',
-    currentMedications: '',
-    symptoms: '',
-    physician: selectedNurse ? `${selectedNurse.full_name}` : ''
+    date: "",
+    time: "",
+    weight: "",
+    height: "",
+    previousDeworming: "",
+    allergies: "",
+    currentMedications: "",
+    symptoms: "",
+    physician: selectedNurse ? `${selectedNurse.full_name}` : "",
   });
 
   // Update physician when selectedNurse changes
   useEffect(() => {
     if (selectedNurse) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        physician: `${selectedNurse.full_name}`
+        physician: `${selectedNurse.full_name}`,
       }));
     }
   }, [selectedNurse]);
@@ -83,31 +95,33 @@ const DewormingPage: NextPage = () => {
   const fetchRecords = async () => {
     try {
       const { data, error } = await supabase
-        .from('deworming_records')
-        .select('*')
-        .eq('full_name', selectedPatient)
-        .order('created_at', { ascending: false });
+        .from("deworming_records")
+        .select("*")
+        .eq("full_name", selectedPatient)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
 
       if (data) {
-        setRecords(data.map(record => ({
-          id: record.id,
-          dateTime: new Date(record.created_at).toLocaleString(),
-          date_of_service: record.date_of_service,
-          time_of_service: record.time_of_service,
-          weight: record.weight,
-          height: record.height,
-          previousDeworming: record.previous_deworming,
-          allergies: record.allergies,
-          currentMedications: record.current_medications,
-          symptoms: record.symptoms,
-          physician: record.physician_name
-        })));
+        setRecords(
+          data.map((record) => ({
+            id: record.id,
+            dateTime: new Date(record.created_at).toLocaleString(),
+            date_of_service: record.date_of_service,
+            time_of_service: record.time_of_service,
+            weight: record.weight,
+            height: record.height,
+            previousDeworming: record.previous_deworming,
+            allergies: record.allergies,
+            currentMedications: record.current_medications,
+            symptoms: record.symptoms,
+            physician: record.physician_name,
+          }))
+        );
       }
     } catch (error) {
-      console.error('Error fetching records:', error);
-      setError('Failed to load records. Please try again.');
+      console.error("Error fetching records:", error);
+      setError("Failed to load records. Please try again.");
     }
   };
 
@@ -115,25 +129,31 @@ const DewormingPage: NextPage = () => {
     const selectedName = e.target.value;
     setSelectedPatient(selectedName);
     if (selectedName) {
-      router.push(`/services/deworming?patient=${encodeURIComponent(selectedName)}`);
+      router.push(
+        `/services/deworming?patient=${encodeURIComponent(selectedName)}`
+      );
     } else {
       router.push("/services/deworming");
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const selectedPatientData = patients.find(p => p.full_name === selectedPatient);
+  const selectedPatientData = patients.find(
+    (p) => p.full_name === selectedPatient
+  );
 
   const handleViewRecord = (record: DewormingRecord) => {
     if (!record) return;
-    
+
     setFormData({
       date: record.date_of_service,
       time: record.time_of_service,
@@ -143,7 +163,7 @@ const DewormingPage: NextPage = () => {
       allergies: record.allergies,
       currentMedications: record.currentMedications,
       symptoms: record.symptoms,
-      physician: record.physician
+      physician: record.physician,
     });
   };
 
@@ -157,32 +177,32 @@ const DewormingPage: NextPage = () => {
 
     try {
       const { error } = await supabase
-        .from('deworming_records')
+        .from("deworming_records")
         .delete()
-        .eq('id', recordId);
+        .eq("id", recordId);
 
       if (error) throw error;
 
       // Refresh the records
       await fetchRecords();
-      alert('Record deleted successfully!');
+      alert("Record deleted successfully!");
     } catch (error) {
-      console.error('Error deleting record:', error);
-      setError('Failed to delete record. Please try again.');
+      console.error("Error deleting record:", error);
+      setError("Failed to delete record. Please try again.");
     }
   };
 
   const handleNewRecord = () => {
     setFormData({
-      date: '',
-      time: '',
-      weight: '',
-      height: '',
-      previousDeworming: '',
-      allergies: '',
-      currentMedications: '',
-      symptoms: '',
-      physician: selectedNurse ? `${selectedNurse.full_name}` : ''
+      date: "",
+      time: "",
+      weight: "",
+      height: "",
+      previousDeworming: "",
+      allergies: "",
+      currentMedications: "",
+      symptoms: "",
+      physician: selectedNurse ? `${selectedNurse.full_name}` : "",
     });
   };
 
@@ -191,7 +211,7 @@ const DewormingPage: NextPage = () => {
     try {
       // Validate that a patient is selected
       if (!selectedPatient) {
-        setError('Please select a patient before submitting the form.');
+        setError("Please select a patient before submitting the form.");
         return;
       }
 
@@ -203,9 +223,8 @@ const DewormingPage: NextPage = () => {
       const weight = formData.weight ? parseFloat(formData.weight) : null;
       const height = formData.height ? parseFloat(formData.height) : null;
 
-      const { error } = await supabase
-        .from('deworming_records')
-        .insert([{
+      const { error } = await supabase.from("deworming_records").insert([
+        {
           full_name: selectedPatient,
           date_of_service: dateOfService,
           time_of_service: timeOfService,
@@ -216,32 +235,35 @@ const DewormingPage: NextPage = () => {
           current_medications: formData.currentMedications,
           symptoms: formData.symptoms,
           physician_name: formData.physician,
-          created_at: new Date().toISOString()
-        }]);
+          created_at: new Date().toISOString(),
+        },
+      ]);
 
       if (error) throw error;
 
       // Reset form
       setFormData({
-        date: '',
-        time: '',
-        weight: '',
-        height: '',
-        previousDeworming: '',
-        allergies: '',
-        currentMedications: '',
-        symptoms: '',
-        physician: selectedNurse ? `${selectedNurse.full_name}` : ''
+        date: "",
+        time: "",
+        weight: "",
+        height: "",
+        previousDeworming: "",
+        allergies: "",
+        currentMedications: "",
+        symptoms: "",
+        physician: selectedNurse ? `${selectedNurse.full_name}` : "",
       });
 
       // Show success message
-      alert('Deworming record submitted successfully!');
-      
+      alert("Deworming record submitted successfully!");
+
       // Refresh records after submission
       await fetchRecords();
     } catch (error) {
-      console.error('Error submitting deworming record:', error);
-      setError('Failed to submit deworming record. Please check your input values and try again.');
+      console.error("Error submitting deworming record:", error);
+      setError(
+        "Failed to submit deworming record. Please check your input values and try again."
+      );
     }
   };
 
@@ -272,7 +294,9 @@ const DewormingPage: NextPage = () => {
 
           <div className="text-center">
             <h1 className="text-3xl font-bold text-white">Deworming Service</h1>
-            <p className="mt-1 text-lg text-indigo-200">Schedule and track deworming services</p>
+            <p className="mt-1 text-lg text-indigo-200">
+              Schedule and track deworming services
+            </p>
           </div>
 
           <button
@@ -301,7 +325,9 @@ const DewormingPage: NextPage = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           <div className="bg-indigo-700 px-8 py-5">
-            <h2 className="text-2xl font-semibold text-white">Deworming Service Form</h2>
+            <h2 className="text-2xl font-semibold text-white">
+              Deworming Service Form
+            </h2>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 space-y-10">
@@ -338,7 +364,11 @@ const DewormingPage: NextPage = () => {
                 </label>
                 <button
                   type="button"
-                  onClick={() => router.push(`/patient-information?returnTo=/services/deworming`)}
+                  onClick={() =>
+                    router.push(
+                      `/patient-information?returnTo=/services/deworming`
+                    )
+                  }
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <svg
@@ -392,7 +422,9 @@ const DewormingPage: NextPage = () => {
               <div>
                 <p className="text-sm font-medium text-gray-500">Physician</p>
                 <p className="text-lg font-semibold text-gray-900">
-                  {selectedNurse ? `${selectedNurse.full_name} (${selectedNurse.position})` : "Not available"}
+                  {selectedNurse
+                    ? `${selectedNurse.full_name} (${selectedNurse.position})`
+                    : "Not available"}
                 </p>
               </div>
               <div>
@@ -410,12 +442,16 @@ const DewormingPage: NextPage = () => {
             </div>
 
             <section>
-              <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Appointment Details</h3>
-              
+              <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
+                Appointment Details
+              </h3>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Preferred Date
+                    </label>
                     <input
                       type="date"
                       name="date"
@@ -424,9 +460,11 @@ const DewormingPage: NextPage = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Time</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Preferred Time
+                    </label>
                     <input
                       type="time"
                       name="time"
@@ -435,10 +473,12 @@ const DewormingPage: NextPage = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                     />
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Weight (kg)
+                      </label>
                       <input
                         type="number"
                         name="weight"
@@ -448,7 +488,9 @@ const DewormingPage: NextPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Height (cm)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Height (cm)
+                      </label>
                       <input
                         type="number"
                         name="height"
@@ -459,10 +501,12 @@ const DewormingPage: NextPage = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Previous Deworming History</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Previous Deworming History
+                    </label>
                     <textarea
                       name="previousDeworming"
                       value={formData.previousDeworming}
@@ -472,9 +516,11 @@ const DewormingPage: NextPage = () => {
                       placeholder="List previous deworming dates and medications used"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Known Allergies</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Known Allergies
+                    </label>
                     <textarea
                       name="allergies"
                       value={formData.allergies}
@@ -488,11 +534,15 @@ const DewormingPage: NextPage = () => {
             </section>
 
             <section>
-              <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Health Information</h3>
-              
+              <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
+                Health Information
+              </h3>
+
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Current Medications</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Current Medications
+                  </label>
                   <textarea
                     name="currentMedications"
                     value={formData.currentMedications}
@@ -502,9 +552,11 @@ const DewormingPage: NextPage = () => {
                     placeholder="List any medications you are currently taking"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Symptoms</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Symptoms
+                  </label>
                   <textarea
                     name="symptoms"
                     value={formData.symptoms}
@@ -518,15 +570,15 @@ const DewormingPage: NextPage = () => {
             </section>
 
             <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
                 onClick={() => router.push(`/`)}
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
               >
                 Save Appointment
@@ -538,7 +590,9 @@ const DewormingPage: NextPage = () => {
           {records.length > 0 && (
             <div className="mt-8">
               <div className="flex justify-between items-center mb-4 px-4">
-                <h3 className="text-lg font-medium text-gray-900">Assessment History</h3>
+                <h3 className="text-lg font-medium text-gray-900">
+                  Assessment History
+                </h3>
                 <button
                   onClick={handleNewRecord}
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -563,16 +617,26 @@ const DewormingPage: NextPage = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date/Time</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Physician</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date/Time
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Physician
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {records.map((record) => (
                       <tr key={record.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.dateTime}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.physician}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {record.dateTime}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {record.physician}
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <button
                             onClick={() => handleViewRecord(record)}
@@ -600,4 +664,4 @@ const DewormingPage: NextPage = () => {
   );
 };
 
-export default DewormingPage; 
+export default DewormingPage;

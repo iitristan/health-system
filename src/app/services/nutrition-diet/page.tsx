@@ -5,8 +5,16 @@ import type { NextPage } from 'next';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { useSession } from "@/app/context/SessionContext";
+import { Suspense } from "react";
 
 const NutritionDietPage: NextPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NutritionDietPageContent />
+    </Suspense>
+  );
+};
+const NutritionDietPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");
