@@ -275,7 +275,7 @@ function HealthAssessmentPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-indigo-800 py-6 px-6 shadow-md">
+       <div className="bg-indigo-800 py-6 px-6 shadow-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button
             onClick={() => router.push("/")}
@@ -299,9 +299,9 @@ function HealthAssessmentPage() {
           </button>
 
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-white">
-              Electronic Health Record
-            </h1>
+          <h1 className="text-3xl font-bold text-white">
+            Electronic Health Record
+          </h1>
             <p className="mt-1 text-lg text-indigo-200">Health Assessment</p>
           </div>
 
@@ -370,7 +370,7 @@ function HealthAssessmentPage() {
                   </svg>
                   New Patient
                 </button>
-              </div>
+        </div>
               <select
                 value={selectedPatient}
                 onChange={handlePatientChange}
@@ -394,37 +394,37 @@ function HealthAssessmentPage() {
                 <p className="text-lg font-semibold text-gray-900">
                   {patientInfo.fullName || "Not selected"}
                 </p>
-              </div>
-              <div>
+            </div>
+            <div>
                 <p className="text-sm font-medium text-gray-500">
                   Date of Service
                 </p>
                 <p className="text-lg font-semibold text-gray-900">
                   {patientInfo.dateOfService}
                 </p>
-              </div>
-              <div>
+            </div>
+            <div>
                 <p className="text-sm font-medium text-gray-500">Physician</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {patientInfo.physician}
                 </p>
-              </div>
-              <div>
+            </div>
+            <div>
                 <p className="text-sm font-medium text-gray-500">Age</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {patientInfo.age}
                 </p>
-              </div>
+            </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Gender</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {patientInfo.gender}
                 </p>
-              </div>
-            </div>
+          </div>
+        </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Request Related */}
+        {/* Request Related */}
               <div className="border-t border-gray-200 pt-6">
                 <h3 className="text-lg font-medium text-gray-800 mb-4">
                   Request Related
@@ -432,8 +432,8 @@ function HealthAssessmentPage() {
                 <p className="text-sm text-gray-600 mb-2">
                   CHECK ALL THAT APPLY
                 </p>
-
-                <div className="space-y-2">
+          
+          <div className="space-y-2">
                   {[
                     "Physical and Health Status",
                     "Dietary and Nutritional Assessment",
@@ -442,34 +442,34 @@ function HealthAssessmentPage() {
                     "Hair Assessment",
                     "Skin Assessment",
                   ].map((item) => (
-                    <label key={item} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="requestRelated"
-                        value={item}
-                        checked={formData.requestRelated.includes(item)}
+              <label key={item} className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="requestRelated"
+                  value={item}
+                  checked={formData.requestRelated.includes(item)}
                         onChange={() =>
                           handleArrayChange("requestRelated", item)
                         }
-                        className="h-4 w-4 text-blue-600"
-                      />
-                      <span className="ml-2">{item}</span>
-                    </label>
-                  ))}
-                </div>
-
-                <div className="mt-4">
+                  className="h-4 w-4 text-blue-600"
+                />
+                <span className="ml-2">{item}</span>
+              </label>
+            ))}
+          </div>
+          
+          <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Documentation to be sent back to:
                   </label>
-                  <input
-                    type="text"
-                    name="documentationSentTo"
-                    value={formData.documentationSentTo}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
+            <input
+              type="text"
+              name="documentationSentTo"
+              value={formData.documentationSentTo}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
 
                 {/* Additional Assessments - Conditionally rendered based on requestRelated */}
                 {formData.requestRelated.length > 0 && (
@@ -575,51 +575,51 @@ function HealthAssessmentPage() {
                     </div>
                   </div>
                 )}
-              </div>
+        </div>
 
-              {/* Risk Level */}
+        {/* Risk Level */}
               <div className="border-t border-gray-200 pt-6">
                 <h3 className="text-lg font-medium text-gray-800 mb-4">
                   Level of Risk
                 </h3>
-                <div className="flex space-x-4">
+          <div className="flex space-x-4">
                   {["High Risk", "Low Risk"].map((risk) => (
-                    <label key={risk} className="flex items-center">
-                      <input
-                        type="radio"
-                        name="riskLevel"
-                        checked={formData.riskLevel === risk}
+              <label key={risk} className="flex items-center">
+                <input
+                  type="radio"
+                  name="riskLevel"
+                  checked={formData.riskLevel === risk}
                         onChange={() =>
                           handleInputChange({
                             target: { name: "riskLevel", value: risk },
                           } as React.ChangeEvent<HTMLInputElement>)
                         }
-                        className="h-4 w-4 text-blue-600"
-                        required
-                      />
-                      <span className="ml-2">{risk}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+                  className="h-4 w-4 text-blue-600"
+                  required
+                />
+                <span className="ml-2">{risk}</span>
+              </label>
+            ))}
+          </div>
+        </div>
 
-              {/* Assessment Time Frame */}
+        {/* Assessment Time Frame */}
               <div className="border-t border-gray-200 pt-6">
                 <h3 className="text-lg font-medium text-gray-800 mb-4">
                   Assessment Time Frame
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {[
                     "Admission",
                     "Weekly",
                     "Change in Condition",
                     "Quarterly",
                   ].map((time) => (
-                    <label key={time} className="flex items-center">
-                      <input
-                        type="radio"
-                        name="assessmentTimeFrame"
-                        checked={formData.assessmentTimeFrame === time}
+              <label key={time} className="flex items-center">
+                <input
+                  type="radio"
+                  name="assessmentTimeFrame"
+                  checked={formData.assessmentTimeFrame === time}
                         onChange={() =>
                           handleInputChange({
                             target: {
@@ -628,51 +628,51 @@ function HealthAssessmentPage() {
                             },
                           } as React.ChangeEvent<HTMLInputElement>)
                         }
-                        className="h-4 w-4 text-blue-600"
-                        required
-                      />
-                      <span className="ml-2">{time}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+                  className="h-4 w-4 text-blue-600"
+                  required
+                />
+                <span className="ml-2">{time}</span>
+              </label>
+            ))}
+          </div>
+        </div>
 
-              {/* Sent By */}
+        {/* Sent By */}
               <div className="border-t border-gray-200 pt-6">
                 <h3 className="text-lg font-medium text-gray-800 mb-4">By:</h3>
-                <div className="flex space-x-4">
+          <div className="flex space-x-4">
                   {["Email", "Fax", "Hard Copy"].map((method) => (
-                    <label key={method} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="sentBy"
-                        value={method}
-                        checked={formData.sentBy.includes(method)}
+              <label key={method} className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="sentBy"
+                  value={method}
+                  checked={formData.sentBy.includes(method)}
                         onChange={() => handleArrayChange("sentBy", method)}
-                        className="h-4 w-4 text-blue-600"
-                      />
-                      <span className="ml-2">{method}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+                  className="h-4 w-4 text-blue-600"
+                />
+                <span className="ml-2">{method}</span>
+              </label>
+            ))}
+          </div>
+        </div>
 
               <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
-                <button
-                  type="button"
+          <button 
+            type="button" 
                   className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
                   onClick={() => router.push(`/`)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
                   className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
-                >
-                  Save Assessment
-                </button>
-              </div>
-            </form>
+          >
+            Save Assessment
+          </button>
+        </div>
+      </form>
           </div>
         </div>
       </div>

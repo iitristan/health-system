@@ -939,7 +939,7 @@ Referral is indicated if:
       }
 
       // Clear form
-      setNewEntry({
+    setNewEntry({
         bloodPressure: "",
         temperature: "",
         pulseRate: "",
@@ -1252,7 +1252,7 @@ Referral is indicated if:
               Electronic Health Record
             </h1>
             <p className="mt-1 text-lg text-indigo-200">Vital Signs</p>
-          </div>
+            </div>
 
           <button
             onClick={() => router.back()}
@@ -1274,7 +1274,7 @@ Referral is indicated if:
               />
             </svg>
           </button>
-        </div>
+            </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -1368,59 +1368,59 @@ Referral is indicated if:
 
               {/* Patient Info */}
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-                <div>
+            <div>
                   <p className="text-sm font-medium text-gray-500">
                     Patient Name
                   </p>
                   <p className="text-lg font-semibold text-gray-900">
                     {patientInfo.fullName || "Not selected"}
                   </p>
-                </div>
-                <div>
+            </div>
+            <div>
                   <p className="text-sm font-medium text-gray-500">
                     Date of Service
                   </p>
                   <p className="text-lg font-semibold text-gray-900">
                     {patientInfo.dateToday}
                   </p>
-                </div>
-                <div>
+            </div>
+            <div>
                   <p className="text-sm font-medium text-gray-500">Physician</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {selectedNurse
                       ? `${selectedNurse.full_name}, ${selectedNurse.position}`
                       : "Not selected"}
                   </p>
-                </div>
-                <div>
+            </div>
+            <div>
                   <p className="text-sm font-medium text-gray-500">Age</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {patientInfo.age || "Not available"}
                   </p>
-                </div>
-                <div>
+            </div>
+            <div>
                   <p className="text-sm font-medium text-gray-500">Gender</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {patientInfo.gender || "Not available"}
                   </p>
-                </div>
-              </div>
+          </div>
+        </div>
 
               {/* Vital Signs Section */}
-              <div>
+                <div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">
                   Vital Signs
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Blood Pressure
                     </label>
-                    <input
-                      type="text"
-                      name="bloodPressure"
-                      value={newEntry.bloodPressure}
-                      onChange={handleInputChange}
+                  <input
+                    type="text"
+                    name="bloodPressure"
+                    value={newEntry.bloodPressure}
+                    onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       placeholder="e.g. 120/80"
                       required
@@ -1448,16 +1448,16 @@ Referral is indicated if:
                         }
                         return null;
                       })()}
-                  </div>
-                  <div>
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Temperature
                     </label>
-                    <input
+                  <input
                       type="number"
-                      name="temperature"
-                      value={newEntry.temperature}
-                      onChange={handleInputChange}
+                    name="temperature"
+                    value={newEntry.temperature}
+                    onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       placeholder="°C"
                       required
@@ -1480,16 +1480,16 @@ Referral is indicated if:
                         }
                         return null;
                       })()}
-                  </div>
-                  <div>
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Pulse Rate
                     </label>
-                    <input
+                  <input
                       type="number"
-                      name="pulseRate"
-                      value={newEntry.pulseRate}
-                      onChange={handleInputChange}
+                    name="pulseRate"
+                    value={newEntry.pulseRate}
+                    onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       placeholder="bpm"
                       required
@@ -1514,16 +1514,16 @@ Referral is indicated if:
                         }
                         return null;
                       })()}
-                  </div>
-                  <div>
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Respiration Rate
                     </label>
-                    <input
+                  <input
                       type="number"
-                      name="respirationRate"
-                      value={newEntry.respirationRate}
-                      onChange={handleInputChange}
+                    name="respirationRate"
+                    value={newEntry.respirationRate}
+                    onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       placeholder="breaths/min"
                       required
@@ -1541,53 +1541,53 @@ Referral is indicated if:
                               <p className="text-sm mt-1 whitespace-pre-line">
                                 {respStatus.intervention}
                               </p>
-                            </div>
+                </div>
                           );
                         }
                         return null;
                       })()}
-                  </div>
-                  <div>
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Height (cm)
                     </label>
-                    <input
+                  <input
                       type="number"
-                      name="height"
-                      value={newEntry.height}
-                      onChange={handleInputChange}
+                    name="height"
+                    value={newEntry.height}
+                    onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Enter height in cm (max 999.99)"
                       step="0.01"
                       max="999.99"
                       required
-                    />
-                  </div>
-                  <div>
+                  />
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Weight (kg)
                     </label>
-                    <input
+                  <input
                       type="number"
                       name="weight"
                       value={newEntry.weight}
-                      onChange={handleInputChange}
+                    onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Enter weight in kg (max 999.99)"
                       step="0.01"
                       max="999.99"
                       required
-                    />
-                  </div>
-                  <div>
+                  />
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Oxygen Saturation
                     </label>
-                    <input
+                  <input
                       type="number"
                       name="oxygen"
                       value={newEntry.oxygen}
-                      onChange={handleInputChange}
+                    onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       placeholder="%"
                       required
@@ -1607,7 +1607,7 @@ Referral is indicated if:
                               <p className="text-sm mt-1 whitespace-pre-line">
                                 {oxygenStatus.intervention}
                               </p>
-                            </div>
+                </div>
                           );
                         }
                         return null;
@@ -1617,16 +1617,16 @@ Referral is indicated if:
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Comments
                     </label>
-                    <input
-                      type="text"
-                      name="comments"
-                      value={newEntry.comments}
-                      onChange={handleInputChange}
+                  <input
+                    type="text"
+                    name="comments"
+                    value={newEntry.comments}
+                    onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Additional notes"
-                    />
-                  </div>
+                    placeholder="Additional notes"
+                  />
                 </div>
+              </div>
               </div>
 
               {/* Add BMI display after height and weight */}
@@ -1662,12 +1662,12 @@ Referral is indicated if:
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
+              <button
+                type="submit"
                   className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
-                >
+              >
                   Save and Continue
-                </button>
+              </button>
               </div>
             </form>
 
@@ -1677,10 +1677,10 @@ Referral is indicated if:
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">
                   Vital Signs History
                 </h2>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Date & Time
                         </th>
@@ -1743,9 +1743,9 @@ Referral is indicated if:
                         <th className="px-6 py-2 text-left text-xs text-gray-500"></th>
                         <th className="px-6 py-2 text-left text-xs text-gray-500"></th>
                         <th className="px-6 py-2 text-left text-xs text-gray-500"></th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
                       {vitalSigns.map((record, index) => {
                         const heightInMeters = record.height / 100;
                         const bmi =
@@ -1911,11 +1911,11 @@ Referral is indicated if:
                                 </button>
                               </div>
                             </td>
-                          </tr>
+                    </tr>
                         );
                       })}
-                    </tbody>
-                  </table>
+                </tbody>
+              </table>
                 </div>
               </div>
             </div>

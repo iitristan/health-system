@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import type { NextPage } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from "@/lib/supabaseClient";
 import { useSession } from "@/app/context/SessionContext";
+import { Suspense } from "react";
 
 interface HairAssessmentRecord {
   id: string;
@@ -100,17 +101,36 @@ interface HairAssessmentRecord {
 }
 
 const HairAssessmentPage: NextPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HairAssessmentPageContent />
+    </Suspense>
+  );
+};
+
+const HairAssessmentPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");
   const { selectedNurse } = useSession();
-  const [patients, setPatients] = useState<Array<{ full_name: string; age: number; gender: string }>>([]);
+  const [patients, setPatients] = useState<
+    Array<{ full_name: string; age: number; gender: string }>
+  >([]);
   const [selectedPatient, setSelectedPatient] = useState(patientName || "");
   const [error, setError] = useState<string | null>(null);
-  const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
-  const [attending, setAttending] = useState(selectedNurse ? `${selectedNurse.full_name}, ${selectedNurse.position}` : "N/A");
-  const [historyRecords, setHistoryRecords] = useState<HairAssessmentRecord[]>([]);
-  const [selectedRecord, setSelectedRecord] = useState<HairAssessmentRecord | null>(null);
+  const [currentDate, setCurrentDate] = useState(
+    new Date().toLocaleDateString()
+  );
+  const [attending, setAttending] = useState(
+    selectedNurse
+      ? `${selectedNurse.full_name}, ${selectedNurse.position}`
+      : "N/A"
+  );
+  const [historyRecords, setHistoryRecords] = useState<HairAssessmentRecord[]>(
+    []
+  );
+  const [selectedRecord, setSelectedRecord] =
+    useState<HairAssessmentRecord | null>(null);
 
   const [formData, setFormData] = useState({
     hairType: {
@@ -257,7 +277,9 @@ const HairAssessmentPage: NextPage = () => {
     const selectedName = e.target.value;
     setSelectedPatient(selectedName);
     if (selectedName) {
-      router.push(`/hair-assessment?patient=${encodeURIComponent(selectedName)}`);
+      router.push(
+        `/hair-assessment?patient=${encodeURIComponent(selectedName)}`
+      );
     } else {
       router.push("/hair-assessment");
     }
@@ -269,7 +291,7 @@ const HairAssessmentPage: NextPage = () => {
     const { name, value, type, checked } = e.target;
     if (type === "checkbox") {
       const [parent, child, subChild] = name.split(".");
-    
+
       if (subChild) {
         setFormData((prev) => ({
           ...prev,
@@ -292,7 +314,7 @@ const HairAssessmentPage: NextPage = () => {
       }
     } else {
       const [parent, child, subChild] = name.split(".");
-    
+
       if (subChild) {
         setFormData((prev) => ({
           ...prev,
@@ -316,7 +338,9 @@ const HairAssessmentPage: NextPage = () => {
     }
   };
 
-  const selectedPatientData = patients.find(p => p.full_name === selectedPatient);
+  const selectedPatientData = patients.find(
+    (p) => p.full_name === selectedPatient
+  );
 
   const fetchHistoryRecords = async () => {
     if (!selectedPatient) return;
@@ -385,7 +409,9 @@ const HairAssessmentPage: NextPage = () => {
       scalpSensitivity: {
         nonSensitive: Boolean(record.scalp_sensitivity_non_sensitive),
         mildlySensitive: Boolean(record.scalp_sensitivity_mildly_sensitive),
-        moderatelySensitive: Boolean(record.scalp_sensitivity_moderately_sensitive),
+        moderatelySensitive: Boolean(
+          record.scalp_sensitivity_moderately_sensitive
+        ),
         highlySensitive: Boolean(record.scalp_sensitivity_highly_sensitive),
       },
       scalpCondition: {
@@ -417,7 +443,9 @@ const HairAssessmentPage: NextPage = () => {
       },
       scalpConditions: {
         psoriasis: Boolean(record.scalp_condition_psoriasis),
-        seborrheicDermatitis: Boolean(record.scalp_condition_seborrheic_dermatitis),
+        seborrheicDermatitis: Boolean(
+          record.scalp_condition_seborrheic_dermatitis
+        ),
         scalpAcne: Boolean(record.scalp_condition_acne),
         folliculitis: Boolean(record.scalp_condition_folliculitis),
         na: Boolean(record.scalp_condition_na),
@@ -598,14 +626,16 @@ const HairAssessmentPage: NextPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedPatient) {
       alert("No patient selected");
       return;
     }
 
     if (!selectedNurse) {
-      alert("No nurse selected. Please select a nurse from the dashboard first.");
+      alert(
+        "No nurse selected. Please select a nurse from the dashboard first."
+      );
       return;
     }
 
@@ -633,9 +663,12 @@ const HairAssessmentPage: NextPage = () => {
         hair_length_long: formData.hairLength.long,
         // Scalp Sensitivity
         scalp_sensitivity_non_sensitive: formData.scalpSensitivity.nonSensitive,
-        scalp_sensitivity_mildly_sensitive: formData.scalpSensitivity.mildlySensitive,
-        scalp_sensitivity_moderately_sensitive: formData.scalpSensitivity.moderatelySensitive,
-        scalp_sensitivity_highly_sensitive: formData.scalpSensitivity.highlySensitive,
+        scalp_sensitivity_mildly_sensitive:
+          formData.scalpSensitivity.mildlySensitive,
+        scalp_sensitivity_moderately_sensitive:
+          formData.scalpSensitivity.moderatelySensitive,
+        scalp_sensitivity_highly_sensitive:
+          formData.scalpSensitivity.highlySensitive,
         // Scalp Condition
         scalp_condition_dry: formData.scalpCondition.dry,
         scalp_condition_oily: formData.scalpCondition.oily,
@@ -649,7 +682,8 @@ const HairAssessmentPage: NextPage = () => {
         // Hair Elasticity
         hair_elasticity_elastic: formData.hairElasticity.elastic,
         hair_elasticity_brittle: formData.hairElasticity.brittle,
-        hair_elasticity_prone_to_breakage: formData.hairElasticity.proneToBreakage,
+        hair_elasticity_prone_to_breakage:
+          formData.hairElasticity.proneToBreakage,
         // Hair Porosity
         hair_porosity_low: formData.hairPorosity.lowPorosity,
         hair_porosity_normal: formData.hairPorosity.normalPorosity,
@@ -659,7 +693,8 @@ const HairAssessmentPage: NextPage = () => {
         dandruff_amount: formData.dandruff.amount,
         // Scalp Conditions
         scalp_condition_psoriasis: formData.scalpConditions.psoriasis,
-        scalp_condition_seborrheic_dermatitis: formData.scalpConditions.seborrheicDermatitis,
+        scalp_condition_seborrheic_dermatitis:
+          formData.scalpConditions.seborrheicDermatitis,
         scalp_condition_acne: formData.scalpConditions.scalpAcne,
         scalp_condition_folliculitis: formData.scalpConditions.folliculitis,
         scalp_condition_na: formData.scalpConditions.na,
@@ -678,12 +713,15 @@ const HairAssessmentPage: NextPage = () => {
         split_ends_severity_mild: formData.splitEnds.severity.mild,
         split_ends_severity_moderate: formData.splitEnds.severity.moderate,
         split_ends_severity_severe: formData.splitEnds.severity.severe,
-        split_ends_distribution_localized: formData.splitEnds.distribution.localized,
-        split_ends_distribution_widespread: formData.splitEnds.distribution.widespread,
+        split_ends_distribution_localized:
+          formData.splitEnds.distribution.localized,
+        split_ends_distribution_widespread:
+          formData.splitEnds.distribution.widespread,
         // Hair Care Routine
         hair_care_routine_shampoo: formData.hairCareRoutine.shampoo,
         hair_care_routine_conditioner: formData.hairCareRoutine.conditioner,
-        hair_care_routine_styling_products: formData.hairCareRoutine.stylingProducts,
+        hair_care_routine_styling_products:
+          formData.hairCareRoutine.stylingProducts,
         hair_care_routine_heat_styling: formData.hairCareRoutine.heatStyling,
         // Hair Growth
         hair_growth_symmetrical: formData.hairGrowth.symmetricallyDirection,
@@ -815,7 +853,11 @@ const HairAssessmentPage: NextPage = () => {
                   </label>
                   <button
                     type="button"
-                    onClick={() => router.push(`/patient-information?returnTo=/hair-assessment`)}
+                    onClick={() =>
+                      router.push(
+                        `/patient-information?returnTo=/hair-assessment`
+                      )
+                    }
                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
                     <svg
@@ -886,131 +928,135 @@ const HairAssessmentPage: NextPage = () => {
                 </div>
               </div>
 
-            <section>
+              <section>
                 <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
                   Hair Characteristics
                 </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
                     <h4 className="text-lg font-medium text-gray-700 mb-4">
                       Hair Type
                     </h4>
-                  <div className="space-y-2">
-                    {Object.entries(formData.hairType).map(([key, value]) => (
-                      <label key={key} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name={`hairType.${key}`}
-                          checked={value}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        />
+                    <div className="space-y-2">
+                      {Object.entries(formData.hairType).map(([key, value]) => (
+                        <label key={key} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            name={`hairType.${key}`}
+                            checked={value}
+                            onChange={handleInputChange}
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                          />
                           <span className="ml-2 text-sm text-gray-700">
                             {key.charAt(0).toUpperCase() + key.slice(1)}
                           </span>
-                      </label>
-                    ))}
+                        </label>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <div>
+                  <div>
                     <h4 className="text-lg font-medium text-gray-700 mb-4">
                       Hair Texture
                     </h4>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       {Object.entries(formData.hairTexture).map(
                         ([key, value]) => (
-                      <label key={key} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name={`hairTexture.${key}`}
-                          checked={value}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        />
+                          <label key={key} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              name={`hairTexture.${key}`}
+                              checked={value}
+                              onChange={handleInputChange}
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            />
                             <span className="ml-2 text-sm text-gray-700">
                               {key.charAt(0).toUpperCase() + key.slice(1)}
                             </span>
-                      </label>
+                          </label>
                         )
                       )}
+                    </div>
                   </div>
-                </div>
 
-                <div>
+                  <div>
                     <h4 className="text-lg font-medium text-gray-700 mb-4">
                       Hair Color
                     </h4>
-                  <div className="space-y-2">
-                    {Object.entries(formData.hairColor).map(([key, value]) => (
-                      <label key={key} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name={`hairColor.${key}`}
-                          checked={value}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        />
-                          <span className="ml-2 text-sm text-gray-700">
-                            {key === "natural"
-                              ? "Natural"
-                              : key === "dyed"
-                              ? "Dyed"
-                              : key === "highlightsLowlights"
-                              ? "Highlights/Lowlights"
-                              : key.charAt(0).toUpperCase() + key.slice(1)}
-                          </span>
-                      </label>
-                    ))}
+                    <div className="space-y-2">
+                      {Object.entries(formData.hairColor).map(
+                        ([key, value]) => (
+                          <label key={key} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              name={`hairColor.${key}`}
+                              checked={value}
+                              onChange={handleInputChange}
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            />
+                            <span className="ml-2 text-sm text-gray-700">
+                              {key === "natural"
+                                ? "Natural"
+                                : key === "dyed"
+                                ? "Dyed"
+                                : key === "highlightsLowlights"
+                                ? "Highlights/Lowlights"
+                                : key.charAt(0).toUpperCase() + key.slice(1)}
+                            </span>
+                          </label>
+                        )
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <div>
+                  <div>
                     <h4 className="text-lg font-medium text-gray-700 mb-4">
                       Hair Length
                     </h4>
-                  <div className="space-y-2">
-                    {Object.entries(formData.hairLength).map(([key, value]) => (
-                      <label key={key} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name={`hairLength.${key}`}
-                          checked={value}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        />
-                          <span className="ml-2 text-sm text-gray-700">
-                            {key.charAt(0).toUpperCase() + key.slice(1)}
-                          </span>
-                      </label>
-                    ))}
+                    <div className="space-y-2">
+                      {Object.entries(formData.hairLength).map(
+                        ([key, value]) => (
+                          <label key={key} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              name={`hairLength.${key}`}
+                              checked={value}
+                              onChange={handleInputChange}
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            />
+                            <span className="ml-2 text-sm text-gray-700">
+                              {key.charAt(0).toUpperCase() + key.slice(1)}
+                            </span>
+                          </label>
+                        )
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
 
-            <section>
+              <section>
                 <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
                   Scalp Assessment
                 </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
                     <h4 className="text-lg font-medium text-gray-700 mb-4">
                       Scalp Sensitivity
                     </h4>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       {Object.entries(formData.scalpSensitivity).map(
                         ([key, value]) => (
-                      <label key={key} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name={`scalpSensitivity.${key}`}
-                          checked={value}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        />
+                          <label key={key} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              name={`scalpSensitivity.${key}`}
+                              checked={value}
+                              onChange={handleInputChange}
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            />
                             <span className="ml-2 text-sm text-gray-700">
                               {key === "nonSensitive"
                                 ? "Non Sensitive"
@@ -1022,27 +1068,27 @@ const HairAssessmentPage: NextPage = () => {
                                 ? "Highly Sensitive"
                                 : key.charAt(0).toUpperCase() + key.slice(1)}
                             </span>
-                      </label>
+                          </label>
                         )
                       )}
+                    </div>
                   </div>
-                </div>
 
-                <div>
+                  <div>
                     <h4 className="text-lg font-medium text-gray-700 mb-4">
                       Scalp Condition
                     </h4>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       {Object.entries(formData.scalpCondition).map(
                         ([key, value]) => (
-                      <label key={key} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name={`scalpCondition.${key}`}
-                          checked={value}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        />
+                          <label key={key} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              name={`scalpCondition.${key}`}
+                              checked={value}
+                              onChange={handleInputChange}
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            />
                             <span className="ml-2 text-sm text-gray-700">
                               {key === "dry"
                                 ? "Dry"
@@ -1056,52 +1102,52 @@ const HairAssessmentPage: NextPage = () => {
                                 ? "Normal"
                                 : key.charAt(0).toUpperCase() + key.slice(1)}
                             </span>
-                      </label>
+                          </label>
                         )
                       )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="mt-8">
+                <div className="mt-8">
                   <h4 className="text-lg font-medium text-gray-700 mb-4">
                     Presence of Dandruff
                   </h4>
-                <div className="flex space-x-4">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="dandruff.yes"
-                      checked={formData.dandruff.yes}
-                      onChange={handleInputChange}
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="dandruff.no"
-                      checked={formData.dandruff.no}
-                      onChange={handleInputChange}
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
-                <div className="mt-4">
+                  <div className="flex space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="dandruff.yes"
+                        checked={formData.dandruff.yes}
+                        onChange={handleInputChange}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">Yes</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="dandruff.no"
+                        checked={formData.dandruff.no}
+                        onChange={handleInputChange}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">No</span>
+                    </label>
+                  </div>
+                  <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Amount of Visibility
                     </label>
-                  <input
-                    type="text"
-                    name="dandruff.amount"
-                    value={formData.dandruff.amount}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
-                  />
+                    <input
+                      type="text"
+                      name="dandruff.amount"
+                      value={formData.dandruff.amount}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                    />
+                  </div>
                 </div>
-              </div>
 
                 <div className="mt-8">
                   <h4 className="text-lg font-medium text-gray-700 mb-4">
@@ -1134,31 +1180,31 @@ const HairAssessmentPage: NextPage = () => {
                         </label>
                       )
                     )}
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
 
-            <section>
+              <section>
                 <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
                   Hair Health Assessment
                 </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
                     <h4 className="text-lg font-medium text-gray-700 mb-4">
                       Hair Density
                     </h4>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       {Object.entries(formData.hairDensity).map(
                         ([key, value]) => (
-                      <label key={key} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name={`hairDensity.${key}`}
-                          checked={value}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        />
+                          <label key={key} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              name={`hairDensity.${key}`}
+                              checked={value}
+                              onChange={handleInputChange}
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            />
                             <span className="ml-2 text-sm text-gray-700">
                               {key === "thick"
                                 ? "Thick"
@@ -1168,27 +1214,27 @@ const HairAssessmentPage: NextPage = () => {
                                 ? "Thin"
                                 : key.charAt(0).toUpperCase() + key.slice(1)}
                             </span>
-                      </label>
+                          </label>
                         )
                       )}
+                    </div>
                   </div>
-                </div>
 
-                <div>
+                  <div>
                     <h4 className="text-lg font-medium text-gray-700 mb-4">
                       Hair Elasticity
                     </h4>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       {Object.entries(formData.hairElasticity).map(
                         ([key, value]) => (
-                      <label key={key} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name={`hairElasticity.${key}`}
-                          checked={value}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        />
+                          <label key={key} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              name={`hairElasticity.${key}`}
+                              checked={value}
+                              onChange={handleInputChange}
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            />
                             <span className="ml-2 text-sm text-gray-700">
                               {key === "elastic"
                                 ? "Elastic"
@@ -1198,27 +1244,27 @@ const HairAssessmentPage: NextPage = () => {
                                 ? "Prone to Breakage"
                                 : key.charAt(0).toUpperCase() + key.slice(1)}
                             </span>
-                      </label>
+                          </label>
                         )
                       )}
+                    </div>
                   </div>
-                </div>
 
-                <div>
+                  <div>
                     <h4 className="text-lg font-medium text-gray-700 mb-4">
                       Hair Porosity
                     </h4>
-                  <div className="space-y-2">
+                    <div className="space-y-2">
                       {Object.entries(formData.hairPorosity).map(
                         ([key, value]) => (
-                      <label key={key} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name={`hairPorosity.${key}`}
-                          checked={value}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        />
+                          <label key={key} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              name={`hairPorosity.${key}`}
+                              checked={value}
+                              onChange={handleInputChange}
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            />
                             <span className="ml-2 text-sm text-gray-700">
                               {key === "lowPorosity"
                                 ? "Low Porosity"
@@ -1228,11 +1274,11 @@ const HairAssessmentPage: NextPage = () => {
                                 ? "High Porosity"
                                 : key.charAt(0).toUpperCase() + key.slice(1)}
                             </span>
-                      </label>
+                          </label>
                         )
                       )}
+                    </div>
                   </div>
-                </div>
 
                   <div>
                     <h4 className="text-lg font-medium text-gray-700 mb-4">
@@ -1486,134 +1532,134 @@ const HairAssessmentPage: NextPage = () => {
                             Distribution
                           </h5>
                           <div className="space-y-2">
-                            {Object.entries(formData.splitEnds.distribution).map(
-                              ([key, value]) => (
-                                <label key={key} className="flex items-center">
-                                  <input
-                                    type="checkbox"
-                                    name={`splitEnds.distribution.${key}`}
-                                    checked={value}
-                                    onChange={handleInputChange}
-                                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                  />
-                                  <span className="ml-2 text-sm text-gray-700">
-                                    {key === "localized"
-                                      ? "Localized"
-                                      : key === "widespread"
-                                      ? "Widespread"
-                                      : key.charAt(0).toUpperCase() +
-                                        key.slice(1)}
-                                  </span>
-                                </label>
-                              )
-                            )}
+                            {Object.entries(
+                              formData.splitEnds.distribution
+                            ).map(([key, value]) => (
+                              <label key={key} className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  name={`splitEnds.distribution.${key}`}
+                                  checked={value}
+                                  onChange={handleInputChange}
+                                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">
+                                  {key === "localized"
+                                    ? "Localized"
+                                    : key === "widespread"
+                                    ? "Widespread"
+                                    : key.charAt(0).toUpperCase() +
+                                      key.slice(1)}
+                                </span>
+                              </label>
+                            ))}
                           </div>
                         </div>
                       </div>
                     )}
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
 
-            <section>
+              <section>
                 <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
                   Hair Care Routine
                 </h3>
-              
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
+
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Hair Care Routine
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Frequency
                         </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    <tr>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      <tr>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           Shampoo
                         </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <input
-                          type="text"
-                          name="hairCareRoutine.shampoo"
-                          value={formData.hairCareRoutine.shampoo}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </td>
-                    </tr>
-                    <tr>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <input
+                            type="text"
+                            name="hairCareRoutine.shampoo"
+                            value={formData.hairCareRoutine.shampoo}
+                            onChange={handleInputChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </td>
+                      </tr>
+                      <tr>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           Conditioner
                         </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <input
-                          type="text"
-                          name="hairCareRoutine.conditioner"
-                          value={formData.hairCareRoutine.conditioner}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </td>
-                    </tr>
-                    <tr>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <input
+                            type="text"
+                            name="hairCareRoutine.conditioner"
+                            value={formData.hairCareRoutine.conditioner}
+                            onChange={handleInputChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </td>
+                      </tr>
+                      <tr>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           Styling products
                         </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <input
-                          type="text"
-                          name="hairCareRoutine.stylingProducts"
-                          value={formData.hairCareRoutine.stylingProducts}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </td>
-                    </tr>
-                    <tr>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <input
+                            type="text"
+                            name="hairCareRoutine.stylingProducts"
+                            value={formData.hairCareRoutine.stylingProducts}
+                            onChange={handleInputChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </td>
+                      </tr>
+                      <tr>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           Heat styling
                         </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <input
-                          type="text"
-                          name="hairCareRoutine.heatStyling"
-                          value={formData.hairCareRoutine.heatStyling}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <input
+                            type="text"
+                            name="hairCareRoutine.heatStyling"
+                            value={formData.hairCareRoutine.heatStyling}
+                            onChange={handleInputChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
 
-            <section>
+              <section>
                 <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
                   Hair Growth Assessment
                 </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
                     <h4 className="text-lg font-medium text-gray-700 mb-4">
                       Amount of Body Hair
                     </h4>
-                  <div className="space-y-2">
-                    {Object.entries(formData.bodyHair).map(([key, value]) => (
-                      <label key={key} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          name={`bodyHair.${key}`}
-                          checked={value}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        />
+                    <div className="space-y-2">
+                      {Object.entries(formData.bodyHair).map(([key, value]) => (
+                        <label key={key} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            name={`bodyHair.${key}`}
+                            checked={value}
+                            onChange={handleInputChange}
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                          />
                           <span className="ml-2 text-sm text-gray-700">
                             {key === "symmetricallyDirection"
                               ? "Symmetrically Direction"
@@ -1635,36 +1681,38 @@ const HairAssessmentPage: NextPage = () => {
                       Evaluation of Hair Growth Patterns
                     </h4>
                     <div className="space-y-2">
-                      {Object.entries(formData.hairGrowth).map(([key, value]) => (
-                        <label key={key} className="flex items-center">
-                          <input
-                            type="checkbox"
-                            name={`hairGrowth.${key}`}
-                            checked={value}
-                            onChange={handleInputChange}
-                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                          />
-                          <span className="ml-2 text-sm text-gray-700">
-                            {key === "symmetricallyDirection"
-                              ? "Symmetrically Direction"
-                              : key === "asymmetricallyDistributed"
-                              ? "Asymmetrically Distributed"
-                              : key === "normalAmount"
-                              ? "Normal Amount"
-                              : key === "excessiveAmount"
-                              ? "Excessive Amount"
-                              : key.charAt(0).toUpperCase() + key.slice(1)}
-                          </span>
-                      </label>
-                    ))}
+                      {Object.entries(formData.hairGrowth).map(
+                        ([key, value]) => (
+                          <label key={key} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              name={`hairGrowth.${key}`}
+                              checked={value}
+                              onChange={handleInputChange}
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            />
+                            <span className="ml-2 text-sm text-gray-700">
+                              {key === "symmetricallyDirection"
+                                ? "Symmetrically Direction"
+                                : key === "asymmetricallyDistributed"
+                                ? "Asymmetrically Distributed"
+                                : key === "normalAmount"
+                                ? "Normal Amount"
+                                : key === "excessiveAmount"
+                                ? "Excessive Amount"
+                                : key.charAt(0).toUpperCase() + key.slice(1)}
+                            </span>
+                          </label>
+                        )
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
 
               <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
-              <button
-                type="button"
+                <button
+                  type="button"
                   className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
                   onClick={() => router.push(`/`)}
                 >
@@ -1675,8 +1723,8 @@ const HairAssessmentPage: NextPage = () => {
                   className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
                 >
                   Save Assessment
-              </button>
-            </div>
+                </button>
+              </div>
             </form>
 
             {/* History Table */}
@@ -1692,7 +1740,7 @@ const HairAssessmentPage: NextPage = () => {
                   >
                     New Record
                   </button>
-          </div>
+                </div>
                 <div className="bg-white shadow-md rounded-lg overflow-hidden">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-indigo-50">
@@ -1713,12 +1761,17 @@ const HairAssessmentPage: NextPage = () => {
                         <tr
                           key={record.id}
                           className={
-                            selectedRecord?.id === record.id ? "bg-indigo-50" : ""
+                            selectedRecord?.id === record.id
+                              ? "bg-indigo-50"
+                              : ""
                           }
                         >
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {new Date(record.date_of_service).toLocaleDateString()}{" "}
-                            at {new Date(record.created_at).toLocaleTimeString()}
+                            {new Date(
+                              record.date_of_service
+                            ).toLocaleDateString()}{" "}
+                            at{" "}
+                            {new Date(record.created_at).toLocaleTimeString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {record.physician_info
@@ -1755,4 +1808,4 @@ const HairAssessmentPage: NextPage = () => {
   );
 };
 
-export default HairAssessmentPage; 
+export default HairAssessmentPage;

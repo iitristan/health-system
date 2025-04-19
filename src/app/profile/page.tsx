@@ -63,6 +63,9 @@ const ProfilePage = () => {
     emergency_response: [],
     extensive_medical: []
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetchNurses();
@@ -299,6 +302,27 @@ const ProfilePage = () => {
     }
   }, [showDeleteConfirm]);
 
+  const filteredNurses = nurses.filter(nurse => 
+    nurse.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    nurse.position.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredPatients = patients.filter(patient => 
+    patient.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const paginatedNurses = filteredNurses.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const paginatedPatients = filteredPatients.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(Math.max(filteredNurses.length, filteredPatients.length) / itemsPerPage);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-indigo-800 py-6 px-6 shadow-md">
@@ -378,6 +402,34 @@ const ProfilePage = () => {
           </div>
         )}
 
+        <div className="mb-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search staff or patients..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // Reset to first page when searching
+              }}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <svg
+              className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Nurse List */}
           <div className="lg:col-span-1">
@@ -406,27 +458,50 @@ const ProfilePage = () => {
               </div>
               <div className="border-t border-gray-200">
                 <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-                  <div className="flex items-center">
-                    <svg
-                      className="h-5 w-5 text-gray-400 mr-2"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                    <span className="text-sm text-gray-500">
-                      {nurses.length} nurses found
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <svg
+                        className="h-5 w-5 text-gray-400 mr-2"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                      </svg>
+                      <span className="text-sm text-gray-500">
+                        {filteredNurses.length} staff found
+                      </span>
+                    </div>
+                    {filteredNurses.length > itemsPerPage && (
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                          disabled={currentPage === 1}
+                          className="px-2 py-1 text-sm text-gray-600 disabled:text-gray-300"
+                        >
+                          Previous
+                        </button>
+                        <span className="text-sm text-gray-600">
+                          Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                          onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                          disabled={currentPage === totalPages}
+                          className="px-2 py-1 text-sm text-gray-600 disabled:text-gray-300"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <ul className="divide-y divide-gray-200">
-                  {nurses.map((nurse) => (
+                  {paginatedNurses.map((nurse) => (
                     <li
                       key={nurse.id}
                       className={`px-4 py-3 hover:bg-gray-50 cursor-pointer ${
@@ -476,27 +551,50 @@ const ProfilePage = () => {
               </div>
               <div className="border-t border-gray-200">
                 <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-                  <div className="flex items-center">
-                    <svg
-                      className="h-5 w-5 text-gray-400 mr-2"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                    <span className="text-sm text-gray-500">
-                      {patients.length} patients found
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <svg
+                        className="h-5 w-5 text-gray-400 mr-2"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                      </svg>
+                      <span className="text-sm text-gray-500">
+                        {filteredPatients.length} patients found
+                      </span>
+                    </div>
+                    {filteredPatients.length > itemsPerPage && (
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                          disabled={currentPage === 1}
+                          className="px-2 py-1 text-sm text-gray-600 disabled:text-gray-300"
+                        >
+                          Previous
+                        </button>
+                        <span className="text-sm text-gray-600">
+                          Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                          onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                          disabled={currentPage === totalPages}
+                          className="px-2 py-1 text-sm text-gray-600 disabled:text-gray-300"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <ul className="divide-y divide-gray-200">
-                  {patients.map((patient) => (
+                  {paginatedPatients.map((patient) => (
                     <li
                       key={patient.full_name}
                       className="px-4 py-3 hover:bg-gray-50"

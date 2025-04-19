@@ -275,7 +275,7 @@ function HealthHistoryPage() {
   ) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-
+    
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
       const parentKey = parent as keyof FormData;
@@ -470,7 +470,7 @@ function HealthHistoryPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-indigo-800 py-6 px-6 shadow-md">
+<div className="bg-indigo-800 py-6 px-6 shadow-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button
             onClick={() => router.push("/")}
@@ -494,9 +494,9 @@ function HealthHistoryPage() {
           </button>
 
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-white">
-              Electronic Health Record
-            </h1>
+          <h1 className="text-3xl font-bold text-white">
+            Electronic Health Record
+          </h1>
             <p className="mt-1 text-lg text-indigo-200">Health History</p>
           </div>
 
@@ -561,7 +561,7 @@ function HealthHistoryPage() {
                   </svg>
                   New Patient
                 </button>
-              </div>
+        </div>
               <select
                 value={selectedPatient}
                 onChange={handlePatientChange}
@@ -574,147 +574,147 @@ function HealthHistoryPage() {
                   </option>
                 ))}
               </select>
-            </div>
+      </div>
 
             {/* Patient Info */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-              <div>
+            <div>
                 <p className="text-sm font-medium text-gray-500">
                   Patient Name
                 </p>
                 <p className="text-lg font-semibold text-gray-900">
                   {patientInfo.fullName || "Not selected"}
                 </p>
-              </div>
-              <div>
+            </div>
+            <div>
                 <p className="text-sm font-medium text-gray-500">
                   Date of Service
                 </p>
                 <p className="text-lg font-semibold text-gray-900">
                   {patientInfo.dateOfService}
                 </p>
-              </div>
-              <div>
+            </div>
+            <div>
                 <p className="text-sm font-medium text-gray-500">Physician</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {patientInfo.physician || "Not selected"}
                 </p>
-              </div>
-              <div>
+            </div>
+            <div>
                 <p className="text-sm font-medium text-gray-500">Age</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {patientInfo.age || "Not available"}
                 </p>
-              </div>
-              <div>
+            </div>
+            <div>
                 <p className="text-sm font-medium text-gray-500">Gender</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {patientInfo.gender || "Not available"}
                 </p>
-              </div>
-            </div>
+          </div>
+        </div>
 
             <div className="p-2">
               <form onSubmit={handleSubmit} className="space-y-8">
-                {/* Chief Complaint */}
-                <div>
+              {/* Chief Complaint */}
+              <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Chief Complaint
                   </label>
-                  <textarea
-                    name="chiefComplaint"
-                    value={formData.chiefComplaint}
-                    onChange={handleInputChange}
+                <textarea
+                  name="chiefComplaint"
+                  value={formData.chiefComplaint}
+                  onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                    rows={3}
-                    placeholder="Enter the primary reason for visit"
-                  />
-                </div>
+                  rows={3}
+                  placeholder="Enter the primary reason for visit"
+                />
+              </div>
 
-                {/* Past Medical History */}
-                <div className="border-t border-gray-200 pt-6">
+              {/* Past Medical History */}
+              <div className="border-t border-gray-200 pt-6">
                   <h3 className="text-lg font-medium text-gray-800 mb-4">
                     Past Medical History
                   </h3>
-                  <div className="space-y-3">
-                    <label className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        name="pastMedicalHistory.occasionalColds"
-                        checked={formData.pastMedicalHistory.occasionalColds}
-                        onChange={handleInputChange}
+                <div className="space-y-3">
+                  <label className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      name="pastMedicalHistory.occasionalColds"
+                      checked={formData.pastMedicalHistory.occasionalColds}
+                      onChange={handleInputChange}
                         className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                      />
-                      <span>Occasional colds and cough</span>
-                    </label>
-                    <label className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        name="pastMedicalHistory.anemia"
-                        checked={formData.pastMedicalHistory.anemia}
-                        onChange={handleInputChange}
+                    />
+                    <span>Occasional colds and cough</span>
+                  </label>
+                  <label className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      name="pastMedicalHistory.anemia"
+                      checked={formData.pastMedicalHistory.anemia}
+                      onChange={handleInputChange}
                         className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                      />
-                      <span>Mild iron-deficiency anemia</span>
-                    </label>
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
+                    />
+                    <span>Mild iron-deficiency anemia</span>
+                  </label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
                         className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                      />
-                      <input
-                        type="text"
-                        name="pastMedicalHistory.other"
-                        value={formData.pastMedicalHistory.other}
-                        onChange={handleInputChange}
+                    />
+                    <input
+                      type="text"
+                      name="pastMedicalHistory.other"
+                      value={formData.pastMedicalHistory.other}
+                      onChange={handleInputChange}
                         className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Other conditions (please specify)"
-                      />
-                    </div>
+                      placeholder="Other conditions (please specify)"
+                    />
                   </div>
                 </div>
+              </div>
 
-                {/* Past Surgical History */}
-                <div className="border-t border-gray-200 pt-6">
+              {/* Past Surgical History */}
+              <div className="border-t border-gray-200 pt-6">
                   <h3 className="text-lg font-medium text-gray-800 mb-4">
                     Past Surgical History
                   </h3>
-                  <div className="mb-4">
+                <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Have you ever had surgery?
                     </label>
-                    <div className="flex space-x-4">
-                      <label className="inline-flex items-center">
-                        <input
-                          type="radio"
-                          name="pastSurgicalHistory.hadSurgery"
-                          value="Yes"
+                  <div className="flex space-x-4">
+                    <label className="inline-flex items-center">
+                      <input
+                        type="radio"
+                        name="pastSurgicalHistory.hadSurgery"
+                        value="Yes"
                           checked={
                             formData.pastSurgicalHistory.hadSurgery === "Yes"
                           }
-                          onChange={handleInputChange}
+                        onChange={handleInputChange}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                        />
-                        <span className="ml-2">Yes</span>
-                      </label>
-                      <label className="inline-flex items-center">
-                        <input
-                          type="radio"
-                          name="pastSurgicalHistory.hadSurgery"
-                          value="No"
+                      />
+                      <span className="ml-2">Yes</span>
+                    </label>
+                    <label className="inline-flex items-center">
+                      <input
+                        type="radio"
+                        name="pastSurgicalHistory.hadSurgery"
+                        value="No"
                           checked={
                             formData.pastSurgicalHistory.hadSurgery === "No"
                           }
-                          onChange={handleInputChange}
+                        onChange={handleInputChange}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                        />
-                        <span className="ml-2">No</span>
-                      </label>
-                    </div>
+                      />
+                      <span className="ml-2">No</span>
+                    </label>
                   </div>
+                </div>
 
                   {formData.pastSurgicalHistory.hadSurgery === "Yes" && (
-                    <div className="space-y-4">
+                  <div className="space-y-4">
                       <h4 className="text-md font-medium text-gray-700">
                         If yes, please list:
                       </h4>
@@ -724,13 +724,13 @@ function HealthHistoryPage() {
                             key={index}
                             className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end"
                           >
-                            <div>
+                        <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Type
                               </label>
-                              <input
-                                type="text"
-                                value={surgery.type}
+                          <input
+                            type="text"
+                            value={surgery.type}
                                 onChange={(e) =>
                                   handleSurgeryChange(
                                     index,
@@ -739,16 +739,16 @@ function HealthHistoryPage() {
                                   )
                                 }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                placeholder="Type of surgery"
-                              />
-                            </div>
-                            <div>
+                            placeholder="Type of surgery"
+                          />
+                        </div>
+                        <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Year
                               </label>
-                              <input
-                                type="text"
-                                value={surgery.year}
+                          <input
+                            type="text"
+                            value={surgery.year}
                                 onChange={(e) =>
                                   handleSurgeryChange(
                                     index,
@@ -757,193 +757,193 @@ function HealthHistoryPage() {
                                   )
                                 }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                placeholder="Year of surgery"
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => removeSurgery(index)}
+                            placeholder="Year of surgery"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeSurgery(index)}
                               className="px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                            >
-                              Remove
-                            </button>
-                          </div>
+                        >
+                          Remove
+                        </button>
+                      </div>
                         )
                       )}
-                      <button
-                        type="button"
-                        onClick={addSurgery}
+                    <button
+                      type="button"
+                      onClick={addSurgery}
                         className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                      >
-                        Add Another Surgery
-                      </button>
-                    </div>
-                  )}
-                </div>
+                    >
+                      Add Another Surgery
+                    </button>
+                  </div>
+                )}
+              </div>
 
-                {/* Recent Hospitalization */}
-                <div className="border-t border-gray-200 pt-6">
+              {/* Recent Hospitalization */}
+              <div className="border-t border-gray-200 pt-6">
                   <h3 className="text-lg font-medium text-gray-800 mb-4">
                     Recent Hospitalization
                   </h3>
-                  <input
-                    type="text"
-                    name="recentHospitalization"
-                    value={formData.recentHospitalization}
-                    onChange={handleInputChange}
+                <input
+                  type="text"
+                  name="recentHospitalization"
+                  value={formData.recentHospitalization}
+                  onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Enter recent hospitalization details"
-                  />
-                </div>
+                  placeholder="Enter recent hospitalization details"
+                />
+              </div>
 
-                {/* Health Maintenance */}
-                <div className="border-t border-gray-200 pt-6">
+              {/* Health Maintenance */}
+              <div className="border-t border-gray-200 pt-6">
                   <h3 className="text-lg font-medium text-gray-800 mb-4">
                     Health Maintenance
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Date of Last Pediatric Checkup
                       </label>
-                      <input
-                        type="text"
-                        name="healthMaintenance.lastPediatricCheckup"
-                        value={formData.healthMaintenance.lastPediatricCheckup}
-                        onChange={handleInputChange}
+                    <input
+                      type="text"
+                      name="healthMaintenance.lastPediatricCheckup"
+                      value={formData.healthMaintenance.lastPediatricCheckup}
+                      onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="e.g. December 2024"
-                      />
-                    </div>
-                    <div>
+                      placeholder="e.g. December 2024"
+                    />
+                  </div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Date of Last CBC
                       </label>
-                      <input
-                        type="text"
-                        name="healthMaintenance.lastCBC"
-                        value={formData.healthMaintenance.lastCBC}
-                        onChange={handleInputChange}
+                    <input
+                      type="text"
+                      name="healthMaintenance.lastCBC"
+                      value={formData.healthMaintenance.lastCBC}
+                      onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="e.g. February 2025"
-                      />
-                    </div>
-                    <div>
+                      placeholder="e.g. February 2025"
+                    />
+                  </div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Date of Last Nutritional Assessment
                       </label>
-                      <input
-                        type="text"
-                        name="healthMaintenance.lastNutritionalAssessment"
+                    <input
+                      type="text"
+                      name="healthMaintenance.lastNutritionalAssessment"
                         value={
                           formData.healthMaintenance.lastNutritionalAssessment
                         }
-                        onChange={handleInputChange}
+                      onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="e.g. January 2025"
-                      />
-                    </div>
-                    <div>
+                      placeholder="e.g. January 2025"
+                    />
+                  </div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Date of Last Vaccination
                       </label>
-                      <input
-                        type="text"
-                        name="healthMaintenance.lastVaccination"
-                        value={formData.healthMaintenance.lastVaccination}
-                        onChange={handleInputChange}
+                    <input
+                      type="text"
+                      name="healthMaintenance.lastVaccination"
+                      value={formData.healthMaintenance.lastVaccination}
+                      onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         placeholder="e.g. July 2024"
-                      />
-                    </div>
-                    <div>
+                    />
+                  </div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Date of Last Deworming
                       </label>
-                      <input
-                        type="text"
-                        name="healthMaintenance.lastDeworming"
-                        value={formData.healthMaintenance.lastDeworming}
-                        onChange={handleInputChange}
+                    <input
+                      type="text"
+                      name="healthMaintenance.lastDeworming"
+                      value={formData.healthMaintenance.lastDeworming}
+                      onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="e.g. August 2024"
-                      />
-                    </div>
-                    <div>
+                      placeholder="e.g. August 2024"
+                    />
+                  </div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Date of Last Eye Exam
                       </label>
-                      <input
-                        type="text"
-                        name="healthMaintenance.lastEyeExam"
-                        value={formData.healthMaintenance.lastEyeExam}
-                        onChange={handleInputChange}
+                    <input
+                      type="text"
+                      name="healthMaintenance.lastEyeExam"
+                      value={formData.healthMaintenance.lastEyeExam}
+                      onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="e.g. January 2025"
-                      />
-                    </div>
+                      placeholder="e.g. January 2025"
+                    />
                   </div>
+                </div>
 
-                  <div className="mt-6">
+                <div className="mt-6">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Glasses or contacts?
                     </label>
-                    <div className="flex space-x-4">
-                      <label className="inline-flex items-center">
-                        <input
-                          type="radio"
-                          name="healthMaintenance.visionCorrection"
+                  <div className="flex space-x-4">
+                    <label className="inline-flex items-center">
+                      <input
+                        type="radio"
+                        name="healthMaintenance.visionCorrection"
                           value="Glasses"
                           checked={
                             formData.healthMaintenance.visionCorrection ===
                             "Glasses"
                           }
-                          onChange={handleInputChange}
+                        onChange={handleInputChange}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                        />
+                      />
                         <span className="ml-2">Glasses</span>
-                      </label>
-                      <label className="inline-flex items-center">
-                        <input
-                          type="radio"
-                          name="healthMaintenance.visionCorrection"
+                    </label>
+                    <label className="inline-flex items-center">
+                      <input
+                        type="radio"
+                        name="healthMaintenance.visionCorrection"
                           value="Contacts"
                           checked={
                             formData.healthMaintenance.visionCorrection ===
                             "Contacts"
                           }
-                          onChange={handleInputChange}
+                        onChange={handleInputChange}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                        />
+                      />
                         <span className="ml-2">Contacts</span>
-                      </label>
-                      <label className="inline-flex items-center">
-                        <input
-                          type="radio"
-                          name="healthMaintenance.visionCorrection"
-                          value="Both"
+                    </label>
+                    <label className="inline-flex items-center">
+                      <input
+                        type="radio"
+                        name="healthMaintenance.visionCorrection"
+                        value="Both"
                           checked={
                             formData.healthMaintenance.visionCorrection ===
                             "Both"
                           }
-                          onChange={handleInputChange}
+                        onChange={handleInputChange}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                        />
-                        <span className="ml-2">Both</span>
-                      </label>
-                    </div>
+                      />
+                      <span className="ml-2">Both</span>
+                    </label>
                   </div>
                 </div>
+              </div>
 
-                {/* Medications */}
-                <div className="border-t border-gray-200 pt-6">
+              {/* Medications */}
+              <div className="border-t border-gray-200 pt-6">
                   <h3 className="text-lg font-medium text-gray-800 mb-4">
                     List all medications and supplements you have:
                   </h3>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Medicine or Supplement
                           </th>
@@ -953,16 +953,16 @@ function HealthHistoryPage() {
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Actions
                           </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
                         {formData.healthMaintenance.medications.map(
                           (med, index) => (
-                            <tr key={index}>
-                              <td className="px-4 py-3 whitespace-nowrap">
-                                <input
-                                  type="text"
-                                  value={med.name}
+                        <tr key={index}>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <input
+                              type="text"
+                              value={med.name}
                                   onChange={(e) =>
                                     handleMedicationChange(
                                       index,
@@ -971,13 +971,13 @@ function HealthHistoryPage() {
                                     )
                                   }
                                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                  placeholder="e.g. Ferrous Sulfate (Iron)"
-                                />
-                              </td>
-                              <td className="px-4 py-3 whitespace-nowrap">
-                                <input
-                                  type="text"
-                                  value={med.frequency}
+                              placeholder="e.g. Ferrous Sulfate (Iron)"
+                            />
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <input
+                              type="text"
+                              value={med.frequency}
                                   onChange={(e) =>
                                     handleMedicationChange(
                                       index,
@@ -986,59 +986,59 @@ function HealthHistoryPage() {
                                     )
                                   }
                                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                  placeholder="e.g. O.D"
-                                />
-                              </td>
-                              <td className="px-4 py-3 whitespace-nowrap">
-                                <button
-                                  type="button"
-                                  onClick={() => removeMedication(index)}
+                              placeholder="e.g. O.D"
+                            />
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <button
+                              type="button"
+                              onClick={() => removeMedication(index)}
                                   className="px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                >
-                                  Remove
-                                </button>
-                              </td>
-                            </tr>
+                            >
+                              Remove
+                            </button>
+                          </td>
+                        </tr>
                           )
                         )}
-                      </tbody>
-                    </table>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={addMedication}
-                    className="mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Add Medication
-                  </button>
+                    </tbody>
+                  </table>
                 </div>
+                <button
+                  type="button"
+                  onClick={addMedication}
+                    className="mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Add Medication
+                </button>
+              </div>
 
-                {/* Form Actions */}
-                <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
-                  <button
-                    type="button"
+              {/* Form Actions */}
+              <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
+                <button
+                  type="button"
                     onClick={() => router.push(`/`)}
                     className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
                     className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Save Health History
-                  </button>
-                </div>
-              </form>
-            </div>
+                >
+                  Save Health History
+                </button>
+              </div>
+            </form>
           </div>
         </div>
+      </div>
 
         {/* History Table */}
         <div className="bg-white rounded-lg shadow mt-8">
           <div className="p-4 border-b">
             <h2 className="text-lg font-semibold">Health History Records</h2>
-          </div>
+    </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
