@@ -5,6 +5,7 @@ import type { NextPage } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useSession } from "@/app/context/SessionContext";
+import { Suspense } from "react";
 
 interface FormData {
   clientName: string;
@@ -43,11 +44,17 @@ interface NursesNotesRecord {
 }
 
 const NurseNotesPage: NextPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NurseNotesPageContent />
+    </Suspense>
+  );
+};
+const NurseNotesPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");
   const { selectedNurse } = useSession();
-
   const [formData, setFormData] = useState<FormData>({
     clientName: "Charlene Olayvar",
     dateOfBirth: "",
