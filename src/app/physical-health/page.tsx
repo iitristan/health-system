@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import { Suspense } from "react";
 import type { NextPage } from "next";
 import { useSession } from "@/app/context/SessionContext";
+import { Suspense } from "react";
 
 type Activity = {
   name: string;
@@ -255,6 +255,13 @@ interface PhysicalHealthRecord {
 }
 
 const PhysicalHealthPage: NextPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PhysicalHealthPageContent />
+    </Suspense>
+  );
+};
+const PhysicalHealthPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");
