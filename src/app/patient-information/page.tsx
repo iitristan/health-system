@@ -42,6 +42,8 @@ function PatientInformationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");
+  const returnTo = searchParams.get("returnTo");
+  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<PatientFormData>({
     fullName: "",
@@ -141,6 +143,24 @@ function PatientInformationPage() {
       ...prev,
       [name]: value,
     }));
+
+    // If date of birth changes, update age
+    if (name === "dateOfBirth" && value) {
+      const birthDate = new Date(value);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
+        age--;
+      }
+      setFormData((prev) => ({
+        ...prev,
+        age: age.toString(),
+      }));
+    }
   };
 
   const handleSiblingChange = (
@@ -178,9 +198,11 @@ function PatientInformationPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
     try {
       if (!formData.fullName || !formData.dateOfBirth) {
-        alert(
+        setError(
           "Please fill in all required fields (Full Name and Date of Birth)"
         );
         return;
@@ -251,11 +273,16 @@ function PatientInformationPage() {
         if (insertError) throw insertError;
         alert("New patient record created successfully!");
       }
+
+      // After successful save, redirect back to the original page if returnTo is provided
+      if (returnTo) {
+        router.push(returnTo);
+      } else {
+        router.push("/");
+      }
     } catch (error) {
       console.error("Error saving patient information:", error);
-      alert(
-        "Failed to save patient information. Please check all required fields and try again."
-      );
+      setError("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -323,9 +350,34 @@ function PatientInformationPage() {
             <h2 className="text-2xl font-semibold text-white">
               Patient Demographics Form
             </h2>
+            <span className="text-l text-gray-200">Fill up the form</span>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 space-y-10">
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="h-5 w-5 text-red-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-red-800">
+                      {error}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            )}
             <section>
               <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
                 Basic Information
@@ -347,18 +399,34 @@ function PatientInformationPage() {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Date of Birth
-                    </label>
-                    <input
-                      type="date"
-                      name="dateOfBirth"
-                      value={formData.dateOfBirth}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
-                      required
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Date of Birth
+                      </label>
+                      <input
+                        type="date"
+                        name="dateOfBirth"
+                        value={formData.dateOfBirth}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Age
+                      </label>
+                      <input
+                        type="number"
+                        name="age"
+                        value={formData.age}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                        min="0"
+                        max="120"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -541,6 +609,17 @@ function PatientInformationPage() {
                         />
                         <span className="text-sm text-gray-700">Married</span>
                       </label>
+                      <label className="flex items-center space-x-3">
+                        <input
+                          type="radio"
+                          name="maritalStatus"
+                          value="Other"
+                          checked={formData.maritalStatus === "Other"}
+                          onChange={handleInputChange}
+                          className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                        />
+                        <span className="text-sm text-gray-700">Other</span>
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -560,9 +639,7 @@ function PatientInformationPage() {
                           onChange={handleInputChange}
                           className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                         />
-                        <span className="text-sm text-gray-700">
-                          Employed
-                        </span>
+                        <span className="text-sm text-gray-700">Employed</span>
                       </label>
                       <label className="flex items-center space-x-3">
                         <input
@@ -587,6 +664,17 @@ function PatientInformationPage() {
                         <span className="text-sm text-gray-700">
                           Unemployed
                         </span>
+                      </label>
+                      <label className="flex items-center space-x-3">
+                        <input
+                          type="radio"
+                          name="employmentStatus"
+                          value="Retired"
+                          checked={formData.employmentStatus === "Retired"}
+                          onChange={handleInputChange}
+                          className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                        />
+                        <span className="text-sm text-gray-700">Retired</span>
                       </label>
                     </div>
                   </div>
@@ -787,7 +875,13 @@ function PatientInformationPage() {
             <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
               <button
                 type="button"
-                onClick={() => router.push("/")}
+                onClick={() => {
+                  if (returnTo) {
+                    router.push(returnTo);
+                  } else {
+                    router.back();
+                  }
+                }}
                 className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Cancel
@@ -807,9 +901,7 @@ function PatientInformationPage() {
           <button
             onClick={() =>
               router.push(
-                `/vital-signs?patient=${encodeURIComponent(
-                  formData.fullName
-                )}`
+                `/vital-signs?patient=${encodeURIComponent(formData.fullName)}`
               )
             }
             className="flex items-center justify-center px-4 py-3 bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
@@ -871,9 +963,7 @@ function PatientInformationPage() {
           <button
             onClick={() =>
               router.push(
-                `/nurse-notes/nurses-notes?patient=${encodeURIComponent(
-                  formData.fullName
-                )}`
+                `/nurses-notes?patient=${encodeURIComponent(formData.fullName)}`
               )
             }
             className="flex items-center justify-center px-4 py-3 bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 transition-colors"
