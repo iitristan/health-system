@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import type { NextPage } from 'next';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { useState, useEffect } from "react";
+import type { NextPage } from "next";
+import { useRouter, useSearchParams } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 import { useSession } from "@/app/context/SessionContext";
 import { Suspense } from "react";
 
@@ -19,37 +19,43 @@ const NutritionDietPageContent = () => {
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");
   const { selectedNurse } = useSession();
-  const [patients, setPatients] = useState<Array<{ full_name: string; age: number; gender: string }>>([]);
+  const [patients, setPatients] = useState<
+    Array<{ full_name: string; age: number; gender: string }>
+  >([]);
   const [selectedPatient, setSelectedPatient] = useState(patientName || "");
   const [error, setError] = useState<string | null>(null);
-  const [currentDate, setCurrentDate] = useState(new Date().toISOString().split("T")[0]);
+  const [currentDate, setCurrentDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
   const [attending, setAttending] = useState(selectedNurse?.full_name || "");
 
   const [formData, setFormData] = useState({
-    date: '',
-    time: '',
-    weight: '',
-    height: '',
-    dietaryRestrictions: '',
-    foodAllergies: '',
-    currentDiet: '',
-    healthGoals: '',
-    medicalConditions: ''
+    date: "",
+    time: "",
+    weight: "",
+    height: "",
+    dietaryRestrictions: "",
+    foodAllergies: "",
+    currentDiet: "",
+    healthGoals: "",
+    medicalConditions: "",
   });
 
-  const [records, setRecords] = useState<Array<{
-    id: number;
-    full_name: string;
-    date_of_service: string;
-    time_of_service: string;
-    diet_type: string;
-    food_allergies: string;
-    current_medications: string;
-    health_conditions: string;
-    dietary_restrictions: string;
-    nutritional_goals: string;
-    physician_name: string;
-  }>>([]);
+  const [records, setRecords] = useState<
+    Array<{
+      id: number;
+      full_name: string;
+      date_of_service: string;
+      time_of_service: string;
+      diet_type: string;
+      food_allergies: string;
+      current_medications: string;
+      health_conditions: string;
+      dietary_restrictions: string;
+      nutritional_goals: string;
+      physician_name: string;
+    }>
+  >([]);
 
   // Fetch all patients
   useEffect(() => {
@@ -106,21 +112,27 @@ const NutritionDietPageContent = () => {
     const selectedName = e.target.value;
     setSelectedPatient(selectedName);
     if (selectedName) {
-      router.push(`/services/nutrition-diet?patient=${encodeURIComponent(selectedName)}`);
+      router.push(
+        `/services/nutrition-diet?patient=${encodeURIComponent(selectedName)}`
+      );
     } else {
       router.push("/services/nutrition-diet");
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const selectedPatientData = patients.find(p => p.full_name === selectedPatient);
+  const selectedPatientData = patients.find(
+    (p) => p.full_name === selectedPatient
+  );
 
   const handleViewRecord = (record: {
     id: number;
@@ -143,8 +155,8 @@ const NutritionDietPageContent = () => {
       currentDiet: record.diet_type,
       healthGoals: record.nutritional_goals,
       medicalConditions: record.health_conditions,
-      weight: '',
-      height: ''
+      weight: "",
+      height: "",
     });
   };
 
@@ -156,7 +168,7 @@ const NutritionDietPageContent = () => {
         .eq("id", id);
 
       if (error) throw error;
-      setRecords(records.filter(record => record.id !== id));
+      setRecords(records.filter((record) => record.id !== id));
     } catch (error) {
       console.error("Error deleting record:", error);
       setError("Failed to delete record. Please try again.");
@@ -171,34 +183,32 @@ const NutritionDietPageContent = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from("nutrition_diet_records")
-        .insert({
-          full_name: selectedPatient,
-          date_of_service: formData.date,
-          time_of_service: formData.time,
-          diet_type: formData.currentDiet,
-          food_allergies: formData.foodAllergies,
-          current_medications: formData.medicalConditions,
-          health_conditions: formData.medicalConditions,
-          dietary_restrictions: formData.dietaryRestrictions,
-          nutritional_goals: formData.healthGoals,
-          physician_name: selectedNurse?.full_name
-        });
+      const { error } = await supabase.from("nutrition_diet_records").insert({
+        full_name: selectedPatient,
+        date_of_service: formData.date,
+        time_of_service: formData.time,
+        diet_type: formData.currentDiet,
+        food_allergies: formData.foodAllergies,
+        current_medications: formData.medicalConditions,
+        health_conditions: formData.medicalConditions,
+        dietary_restrictions: formData.dietaryRestrictions,
+        nutritional_goals: formData.healthGoals,
+        physician_name: selectedNurse?.full_name,
+      });
 
       if (error) throw error;
 
       // Reset form
       setFormData({
-        date: '',
-        time: '',
-        weight: '',
-        height: '',
-        dietaryRestrictions: '',
-        foodAllergies: '',
-        currentDiet: '',
-        healthGoals: '',
-        medicalConditions: ''
+        date: "",
+        time: "",
+        weight: "",
+        height: "",
+        dietaryRestrictions: "",
+        foodAllergies: "",
+        currentDiet: "",
+        healthGoals: "",
+        medicalConditions: "",
       });
 
       // Refresh records
@@ -247,14 +257,6 @@ const NutritionDietPageContent = () => {
             <p className="mt-1 text-lg text-indigo-200">
               Nutrition & Diet Assessment
             </p>
-            <span className="text-sm text-gray-200">
-              To request services that the school clinic provides, select what
-              kind of service is requested and fill in the request form which
-              contains basic information, time and date of requested service
-              needed, and other relevant data. Submit the request form and wait
-              for the request to be accepted by the school clinic. Be sure to
-              check within your email for confirmation of your request.
-            </span>
           </div>
 
           <button
@@ -283,7 +285,17 @@ const NutritionDietPageContent = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           <div className="bg-indigo-700 px-8 py-5">
-            <h2 className="text-2xl font-semibold text-white">Nutrition Assessment Form</h2>
+            <h2 className="text-2xl font-semibold text-white">
+              Nutrition Assessment Form
+            </h2>
+            <span className="text-sm text-gray-200">
+              To request services that the school clinic provides, select what
+              kind of service is requested and fill in the request form which
+              contains basic information, time and date of requested service
+              needed, and other relevant data. Submit the request form and wait
+              for the request to be accepted by the school clinic. Be sure to
+              check within your email for confirmation of your request.
+            </span>
           </div>
 
           <div className="p-8 space-y-10">
@@ -321,7 +333,11 @@ const NutritionDietPageContent = () => {
                   </label>
                   <button
                     type="button"
-                    onClick={() => router.push(`/patient-information?returnTo=/services/nutrition-diet`)}
+                    onClick={() =>
+                      router.push(
+                        `/patient-information?returnTo=/services/nutrition-diet`
+                      )
+                    }
                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
                     <svg
@@ -373,9 +389,11 @@ const NutritionDietPageContent = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Physician</p>
+                  <p className="text-sm font-medium text-gray-500">Nurse</p>
                   <p className="text-lg font-semibold text-gray-900">
-                    {selectedNurse ? `${selectedNurse.full_name} (${selectedNurse.position})` : "Not available"}
+                    {selectedNurse
+                      ? `${selectedNurse.full_name} (${selectedNurse.position})`
+                      : "Not available"}
                   </p>
                 </div>
                 <div>
@@ -393,12 +411,16 @@ const NutritionDietPageContent = () => {
               </div>
 
               <section>
-                <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Basic Information</h3>
-                
+                <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
+                  Basic Information
+                </h3>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Date
+                      </label>
                       <input
                         type="date"
                         name="date"
@@ -407,9 +429,11 @@ const NutritionDietPageContent = () => {
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       />
                     </div>
-                    
+
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Time
+                      </label>
                       <input
                         type="time"
                         name="time"
@@ -418,10 +442,12 @@ const NutritionDietPageContent = () => {
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       />
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Weight (kg)
+                        </label>
                         <input
                           type="number"
                           name="weight"
@@ -431,7 +457,9 @@ const NutritionDietPageContent = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Height (cm)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Height (cm)
+                        </label>
                         <input
                           type="number"
                           name="height"
@@ -442,10 +470,12 @@ const NutritionDietPageContent = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Dietary Restrictions</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Dietary Restrictions
+                      </label>
                       <textarea
                         name="dietaryRestrictions"
                         value={formData.dietaryRestrictions}
@@ -455,9 +485,11 @@ const NutritionDietPageContent = () => {
                         placeholder="e.g., vegetarian, vegan, gluten-free"
                       />
                     </div>
-                    
+
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Food Allergies</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Food Allergies
+                      </label>
                       <textarea
                         name="foodAllergies"
                         value={formData.foodAllergies}
@@ -471,11 +503,15 @@ const NutritionDietPageContent = () => {
               </section>
 
               <section>
-                <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Diet and Health Information</h3>
-                
+                <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">
+                  Diet and Health Information
+                </h3>
+
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Current Diet</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Current Diet
+                    </label>
                     <textarea
                       name="currentDiet"
                       value={formData.currentDiet}
@@ -485,9 +521,11 @@ const NutritionDietPageContent = () => {
                       placeholder="Describe your current eating habits and typical meals"
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Health Goals</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Health Goals
+                    </label>
                     <textarea
                       name="healthGoals"
                       value={formData.healthGoals}
@@ -499,7 +537,9 @@ const NutritionDietPageContent = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Medical Conditions</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Medical Conditions
+                    </label>
                     <textarea
                       name="medicalConditions"
                       value={formData.medicalConditions}
@@ -533,32 +573,54 @@ const NutritionDietPageContent = () => {
             {records.length > 0 && (
               <div className="mt-8">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold text-gray-800">Assessment History</h2>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Assessment History
+                  </h2>
                 </div>
                 <div className="bg-white rounded-lg shadow overflow-hidden">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preferred Date</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preferred Time</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diet Type</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dietary Restrictions</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Physician</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Preferred Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Preferred Time
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Diet Type
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Dietary Restrictions
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Nurse
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {records.map((record) => (
                         <tr key={record.id}>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {new Date(record.date_of_service).toLocaleDateString()}
+                            {new Date(
+                              record.date_of_service
+                            ).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {record.time_of_service}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.diet_type}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.dietary_restrictions}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.physician_name}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {record.diet_type}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {record.dietary_restrictions}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {record.physician_name}
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             <button
                               onClick={() => handleViewRecord(record)}
@@ -587,4 +649,4 @@ const NutritionDietPageContent = () => {
   );
 };
 
-export default NutritionDietPage; 
+export default NutritionDietPage;

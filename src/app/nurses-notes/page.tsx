@@ -482,7 +482,7 @@ const NurseNotesPageContent = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Physician</p>
+                  <p className="text-sm font-medium text-gray-500">Nurse</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {selectedNurse
                       ? `${selectedNurse.full_name}, ${selectedNurse.position}`
@@ -716,7 +716,7 @@ const NurseNotesPageContent = () => {
                         Date & Time
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
-                        Nurse/Physician
+                        Nurse
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
                         Actions

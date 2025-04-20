@@ -248,7 +248,7 @@ const HairAssessmentPageContent = () => {
   // Only redirect if we're on the main hair assessment page without a patient
   useEffect(() => {
     if (!selectedNurse && !patientName) {
-      alert("Please select a nurse from the dashboard first.");
+      alert("Please select a staff from the dashboard first.");
       router.push("/");
     }
   }, [selectedNurse, patientName, router]);
@@ -634,7 +634,7 @@ const HairAssessmentPageContent = () => {
 
     if (!selectedNurse) {
       alert(
-        "No nurse selected. Please select a nurse from the dashboard first."
+        "No staff selected. Please select a staff from the dashboard first."
       );
       return;
     }
@@ -909,7 +909,7 @@ const HairAssessmentPageContent = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Physician</p>
+                  <p className="text-sm font-medium text-gray-500">Nurse</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {attending || "Not available"}
                   </p>
@@ -1749,7 +1749,7 @@ const HairAssessmentPageContent = () => {
                           Date & Time
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
-                          Nurse/Physician
+                          Nurse
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
                           Actions

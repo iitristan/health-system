@@ -404,7 +404,7 @@ function HealthAssessmentPage() {
                 </p>
             </div>
             <div>
-                <p className="text-sm font-medium text-gray-500">Physician</p>
+                <p className="text-sm font-medium text-gray-500">Nurse</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {patientInfo.physician}
                 </p>

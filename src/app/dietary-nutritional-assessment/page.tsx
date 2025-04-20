@@ -55,6 +55,8 @@ interface FormData {
     appetite: string;
     foodIntake: string;
     eatingDifficulty: string;
+    weightLossAmount?: string;
+    foodIntakeDetails?: string;
   };
   appetiteStatus: {
     normal: boolean;
@@ -114,6 +116,8 @@ interface DietaryNutritionalRecord {
     appetite: string;
     foodIntake: string;
     eatingDifficulty: string;
+    weightLossAmount?: string;
+    foodIntakeDetails?: string;
   };
   appetite_status: {
     normal: boolean;
@@ -203,7 +207,7 @@ function DietaryAssessmentPage() {
   // Only redirect if we're on the main page without a patient
   useEffect(() => {
     if (!selectedNurse && !patientName) {
-      alert("Please select a nurse from the dashboard first.");
+      alert("Please select a staff from the dashboard first.");
       router.push("/");
     }
   }, [selectedNurse, patientName, router]);
@@ -337,7 +341,7 @@ function DietaryAssessmentPage() {
 
     if (!selectedNurse) {
       alert(
-        "No nurse selected. Please select a nurse from the dashboard first."
+        "No staff selected. Please select a staff from the dashboard first."
       );
       return;
     }
@@ -482,8 +486,10 @@ function DietaryAssessmentPage() {
       },
       malnutritionScreening: {
         weightLoss: record.malnutrition_screening?.weightLoss || "",
+        weightLossAmount: record.malnutrition_screening?.weightLossAmount || "",
         appetite: record.malnutrition_screening?.appetite || "",
         foodIntake: record.malnutrition_screening?.foodIntake || "",
+        foodIntakeDetails: record.malnutrition_screening?.foodIntakeDetails || "",
         eatingDifficulty: record.malnutrition_screening?.eatingDifficulty || "",
       },
       appetiteStatus: {
@@ -620,7 +626,7 @@ function DietaryAssessmentPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-indigo-800 py-6 px-6 shadow-md">
+      <div className="bg-indigo-800 py-4 sm:py-6 px-4 sm:px-6 shadow-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button
             onClick={() => router.push("/")}
@@ -629,7 +635,7 @@ function DietaryAssessmentPage() {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="h-5 w-5 sm:h-6 sm:w-6"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -644,10 +650,10 @@ function DietaryAssessmentPage() {
           </button>
 
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-xl sm:text-3xl font-bold text-white">
               Electronic Health Record
             </h1>
-            <p className="mt-1 text-lg text-indigo-200">
+            <p className="mt-1 text-sm sm:text-lg text-indigo-200">
               Dietary and Nutritional Assessment
             </p>
           </div>
@@ -659,7 +665,7 @@ function DietaryAssessmentPage() {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="h-5 w-5 sm:h-6 sm:w-6"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -675,26 +681,26 @@ function DietaryAssessmentPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           {/* Form Header */}
-          <div className="bg-indigo-700 px-8 py-5">
-            <h2 className="text-2xl font-semibold text-white">
+          <div className="bg-indigo-700 px-4 sm:px-8 py-4 sm:py-5">
+            <h2 className="text-lg sm:text-2xl font-semibold text-white">
               Dietary and Nutritional Assessment Form
             </h2>
           </div>
 
-          <div className="p-8">
+          <div className="p-4 sm:p-8">
             {/* Patient Selection */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-700">
+            <div className="mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 sm:mb-0">
                   Select Patient
                 </label>
                 <button
                   type="button"
                   onClick={() => router.push("/patient-information")}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <svg
                     className="h-4 w-4 mr-2"
@@ -727,26 +733,22 @@ function DietaryAssessmentPage() {
             </div>
 
             {/* Patient Info */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 sm:mb-8">
               <div>
-                <p className="text-sm font-medium text-gray-500">
-                  Patient Name
-                </p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-sm font-medium text-gray-500">Patient Name</p>
+                <p className="text-base sm:text-lg font-semibold text-gray-900">
                   {patientInfo.fullName || "Not selected"}
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">
-                  Date of Service
-                </p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-sm font-medium text-gray-500">Date of Service</p>
+                <p className="text-base sm:text-lg font-semibold text-gray-900">
                   {patientInfo.dateOfService}
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Physician</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-sm font-medium text-gray-500">Nurse</p>
+                <p className="text-base sm:text-lg font-semibold text-gray-900">
                   {patientInfo.physician || "Not available"}
                 </p>
               </div>
@@ -1050,25 +1052,26 @@ function DietaryAssessmentPage() {
                       <td className="px-4 py-2">
                         Have you lost weight recently without trying?
                         <br />
-                        {formData.malnutritionScreening.weightLoss ===
-                          "Yes" && (
-                          <span className="text-sm">
-                            If yes, please specify how much:
+                        {formData.malnutritionScreening.weightLoss === "Yes" && (
+                          <span className="text-sm ml-4">
+                            How much weight have you lost?
                             <input
-                              type="text"
-                              value={formData.malnutritionScreening.weightLoss}
+                              type="number"
+                              value={formData.malnutritionScreening.weightLossAmount || ""}
                               onChange={(e) =>
                                 setFormData((prev) => ({
                                   ...prev,
                                   malnutritionScreening: {
                                     ...prev.malnutritionScreening,
-                                    weightLoss: e.target.value,
+                                    weightLossAmount: e.target.value,
                                   },
                                 }))
                               }
-                              className="ml-2 w-16 p-1 border border-gray-300 rounded-md"
-                            />{" "}
-                            kg
+                              className="ml-2 w-20 p-1 border border-gray-300 rounded-md"
+                              placeholder="kg"
+                              min="0"
+                              step="0.1"
+                            />
                           </span>
                         )}
                       </td>
@@ -1088,6 +1091,7 @@ function DietaryAssessmentPage() {
                                     malnutritionScreening: {
                                       ...prev.malnutritionScreening,
                                       weightLoss: option,
+                                      weightLossAmount: option === "No" ? "" : prev.malnutritionScreening.weightLossAmount
                                     },
                                   }))
                                 }
@@ -1164,24 +1168,25 @@ function DietaryAssessmentPage() {
                     </tr>
                     <tr>
                       <td className="px-4 py-2">
-                        Do you have any allergies?{" "}
-                        {formData.malnutritionScreening.foodIntake ===
-                          "Yes" && (
-                          <span className="text-sm">
+                        Do you have any allergies?
+                        <br />
+                        {formData.malnutritionScreening.foodIntake === "Yes" && (
+                          <span className="text-sm ml-4">
                             If yes, specify:
                             <input
                               type="text"
-                              value={formData.malnutritionScreening.foodIntake}
+                              value={formData.malnutritionScreening.foodIntakeDetails || ""}
                               onChange={(e) =>
                                 setFormData((prev) => ({
                                   ...prev,
                                   malnutritionScreening: {
                                     ...prev.malnutritionScreening,
-                                    foodIntake: e.target.value,
+                                    foodIntakeDetails: e.target.value,
                                   },
                                 }))
                               }
                               className="ml-2 w-48 p-1 border border-gray-300 rounded-md"
+                              placeholder="Specify allergies"
                             />
                           </span>
                         )}
@@ -1202,6 +1207,7 @@ function DietaryAssessmentPage() {
                                     malnutritionScreening: {
                                       ...prev.malnutritionScreening,
                                       foodIntake: option,
+                                      foodIntakeDetails: option === "No" ? "" : prev.malnutritionScreening.foodIntakeDetails
                                     },
                                   }))
                                 }
@@ -1218,17 +1224,17 @@ function DietaryAssessmentPage() {
               </div>
 
               {/* Form Actions */}
-              <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
+              <div className="border-t border-gray-200 pt-6 sm:pt-8 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
                 <button
                   type="button"
-                  className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  className="w-full sm:w-auto px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
                   onClick={() => router.push(`/`)}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
+                  className="w-full sm:w-auto px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
                 >
                   Save Assessment
                 </button>
@@ -1239,68 +1245,70 @@ function DietaryAssessmentPage() {
 
         {/* History Table */}
         {historyRecords.length > 0 && (
-          <div className="mt-8">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold text-gray-900">
+          <div className="mt-6 sm:mt-8">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-0">
                 Assessment History
               </h2>
               <button
                 onClick={handleNewRecord}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
               >
                 New Record
               </button>
             </div>
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-indigo-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
-                      Date & Time
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
-                      Nurse/Physician
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {historyRecords.map((record) => (
-                    <tr
-                      key={record.id}
-                      className={
-                        selectedRecord?.id === record.id ? "bg-indigo-50" : ""
-                      }
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Date(record.date_of_service).toLocaleDateString()}{" "}
-                        at {new Date(record.created_at).toLocaleTimeString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.physician_name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => handleViewRecord(record)}
-                            className="text-indigo-600 hover:text-indigo-900"
-                          >
-                            View Record
-                          </button>
-                          <button
-                            onClick={() => handleDeleteRecord(record.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-indigo-50">
+                    <tr>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
+                        Date & Time
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
+                        Nurse
+                      </th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {historyRecords.map((record) => (
+                      <tr
+                        key={record.id}
+                        className={
+                          selectedRecord?.id === record.id ? "bg-indigo-50" : ""
+                        }
+                      >
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {new Date(record.date_of_service).toLocaleDateString()}{" "}
+                          at {new Date(record.created_at).toLocaleTimeString()}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {record.physician_name}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleViewRecord(record)}
+                              className="text-indigo-600 hover:text-indigo-900"
+                            >
+                              View Record
+                            </button>
+                            <button
+                              onClick={() => handleDeleteRecord(record.id)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}

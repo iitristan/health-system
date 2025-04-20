@@ -440,16 +440,16 @@ function VitalSignsPage() {
       return {
         status: "Elevated Blood Pressure",
         color: "bg-yellow-100 text-yellow-800",
-        intervention: `1. Immediate Intervention:
+        intervention: `1. Immediate Intervention - (Systolic: 118-120 - Diastolic: 78-80)
 • Recheck BP (after 5 minutes of rest) to confirm the initial reading
 • Assess for symptoms (dizziness, chest pain, headache, blurry vision)
 • Position child comfortably and ensure they are calm
 
-2. Urgent Intervention:
+2. Urgent Intervention - (Systolic: 121-123 - Diastolic: 81-83)
 • Provide Education: Advise parents on salt intake, physical activity, and healthy eating
 • Monitor BP: Recommend regular home BP monitoring and tracking readings
 
-3. Referral:
+3. Referral - (Systolic: >124 - Diastolic: >84)
 • Notify Physician: If BP remains elevated after recheck
 • Referral to Pediatric Cardiologist if BP remains high over time or symptoms persist`,
       };
@@ -460,17 +460,17 @@ function VitalSignsPage() {
       return {
         status: "Low Blood Pressure",
         color: "bg-red-100 text-red-800",
-        intervention: `1. Immediate Intervention:
+        intervention: `1. Immediate Intervention - (Systolic: <97 - Diastolic: <57)
 • Recheck BP to confirm the accuracy of the reading
 • Assess for symptoms (dizziness, fainting, fatigue)
 • Position child (lie down with legs elevated to improve circulation)
 • Hydrate: Offer water or electrolyte solution to increase fluid intake
 
-2. Urgent Intervention:
+2. Urgent Intervention - (Systolic: 93 - 90 - Diastolic: 50)
 • Monitor for Dehydration: Check for dry mouth, sunken eyes, and low urine output
 • Dietary Support: Suggest small, frequent meals with adequate salt if necessary
 
-3. Referral:
+3. Referral - (Systolic: 93 - 90 - Diastolic: 50)
 • Notify Physician: If BP remains low after intervention or if symptoms worsen
 • Referral to Pediatrician or specialist if low BP persists or is due to underlying medical condition`,
       };
@@ -499,7 +499,7 @@ function VitalSignsPage() {
       return {
         status: "Elevated Temperature (Fever)",
         color: "bg-yellow-100 text-yellow-800",
-        intervention: `1. Immediate Intervention:
+        intervention: `1. Immediate Intervention: 38-38.5°C
 • Recheck temperature after 15–30 minutes to confirm the reading
 • Ensure proper thermometer placement (oral, tympanic, or axillary)
 • Administer antipyretics (e.g., acetaminophen or ibuprofen) based on age and weight
@@ -507,7 +507,7 @@ function VitalSignsPage() {
 • Keep child in a cool, well-ventilated environment
 • Dress child lightly and use lukewarm sponge baths if necessary
 
-2. Urgent Intervention:
+2. Urgent Intervention: 39-39.5 °C
 • Monitor for warning signs:
   - Fever lasting more than 72 hours
   - Seizures
@@ -516,7 +516,7 @@ function VitalSignsPage() {
   - Difficulty breathing
 • Educate caregivers on proper dosing of antipyretics and signs of complications
 
-3. Referral:
+3. Referral: >40°C
 • Notify physician if fever persists or worsens despite interventions
 • Referral to pediatrician or infectious disease specialist if serious infection is suspected
 • Refer if child shows neurological symptoms (e.g., seizures, altered consciousness)`,
@@ -528,14 +528,14 @@ function VitalSignsPage() {
       return {
         status: "Low Temperature (Hypothermia)",
         color: "bg-red-100 text-red-800",
-        intervention: `1. Immediate Intervention:
+        intervention: `1. Immediate Intervention: 36-33°C
 • Recheck temperature to confirm reading and ensure accurate placement
 • Move child to a warm, dry environment
 • Remove wet or damp clothing
 • Wrap in blankets and prioritize warming neck, chest, and groin areas
 • Offer warm fluids (e.g., broth or water) if child is alert and can swallow safely
 
-2. Urgent Intervention:
+2. Urgent Intervention: 32-30°C
 • Monitor for warning signs:
   - Fever lasting more than 72 hours
   - Seizures
@@ -544,7 +544,7 @@ function VitalSignsPage() {
   - Difficulty breathing
 • Educate caregivers on proper dosing of antipyretics and signs of complications
 
-3. Referral:
+3. Referral: <29 °C
 • Notify physician if fever persists or worsens despite interventions
 • Referral to pediatrician or infectious disease specialist if serious infection is suspected
 • Refer if child shows neurological symptoms (e.g., seizures, altered consciousness)`,
@@ -755,11 +755,38 @@ Referral is indicated if:
       return {
         status: "Hyperoxia",
         color: "bg-yellow-100 text-yellow-800",
-        intervention: `Immediate Intervention (SpO₂ > 100%):
-• Lower the oxygen flow rate if the child is stable and not in respiratory distress.
-• Review the oxygen prescription and confirm the target range for the child (typically 95–98%).
-• Reassure the child and encourage calm breathing to help reduce anxiety-related over-breathing.
-• Monitor SpO₂ continuously using a pulse oximeter and watch for any changes in breathing patterns or comfort.`,
+        intervention: `Immediate —(101-105%) if SpO₂ is slightly elevated to 105% (e.g., child on
+oxygen with no distress)
+• Lower the oxygen flow rate if the child is stable and not in respiratory
+distress.
+• Review the oxygen prescription and confirm the target range for the
+child (typically 95–98%).
+• Reassure the child and encourage calm breathing to help reduce
+anxiety-related over-breathing.
+• Monitor SpO₂ continuously using a pulse oximeter and watch for any
+changes in breathing patterns or comfort.
+
+Urgent — (106-109%) if elevated oxygen levels persist (PaO₂ > 120 mmHg
+confirmed by ABG, or high-flow oxygen used unnecessarily)
+• Titrate oxygen therapy to the lowest effective dose while maintaining
+SpO₂ within normal pediatric range.
+• Assess for signs of oxygen overexposure, such as headache,
+irritability, or dry cough.
+• Notify the healthcare provider for further evaluation, especially if the
+child has asthma or other chronic conditions.
+• Document vital signs and SpO₂ trends and observe for any
+neurological symptoms.
+
+For Referral — (<110%) if signs of oxygen toxicity or complications occur
+• Stop or significantly reduce supplemental oxygen under medical
+supervision.
+• Initiate immediate referral to a pediatrician or higher-level facility if
+the child develops symptoms like confusion, visual disturbances, or
+breathing difficulty.
+• Prepare for possible advanced interventions, especially if the child
+has underlying respiratory issues.
+• Stay with the child, offer reassurance, and explain what is happening
+in age-appropriate language to reduce fear or panic.`,
       };
     }
 
@@ -768,7 +795,7 @@ Referral is indicated if:
         return {
           status: "Mild Hypoxia",
           color: "bg-yellow-100 text-yellow-800",
-          intervention: `Immediate Intervention (SpO₂ 91-94%):
+          intervention: `Immediate — if SpO₂ is slightly lower than normal (91–94%)
 • Reposition the child to High Fowler's or Semi-Fowler's position to promote lung expansion.
 • Encourage calm deep breathing exercises to enhance oxygen intake.
 • Check and ensure the oxygen delivery device (if in use) is properly placed and functioning.
@@ -778,7 +805,7 @@ Referral is indicated if:
         return {
           status: "Moderate Hypoxia",
           color: "bg-orange-100 text-orange-800",
-          intervention: `Urgent Intervention (SpO₂ 86-90%):
+          intervention: `Urgent — if SpO₂ is moderately low (86–90%)
 • Apply supplemental oxygen via nasal cannula or face mask as prescribed.
 • Perform airway suctioning if secretions or obstructions are suspected.
 • Administer prescribed bronchodilators or nebulized medications to improve airway patency.
@@ -788,7 +815,7 @@ Referral is indicated if:
         return {
           status: "Severe Hypoxia",
           color: "bg-red-100 text-red-800",
-          intervention: `Referral Intervention (SpO₂ < 85%):
+          intervention: `For Referral — if SpO₂ is critically low (below 85%)
 • Immediately administer high-flow oxygen using a non-rebreather mask.
 • Activate the emergency response system or notify the healthcare provider urgently.
 • Prepare for possible advanced airway management (e.g., bag-valve-mask ventilation, intubation).
@@ -939,7 +966,7 @@ Referral is indicated if:
       }
 
       // Clear form
-    setNewEntry({
+      setNewEntry({
         bloodPressure: "",
         temperature: "",
         pulseRate: "",
@@ -1252,7 +1279,7 @@ Referral is indicated if:
               Electronic Health Record
             </h1>
             <p className="mt-1 text-lg text-indigo-200">Vital Signs</p>
-            </div>
+          </div>
 
           <button
             onClick={() => router.back()}
@@ -1274,7 +1301,7 @@ Referral is indicated if:
               />
             </svg>
           </button>
-            </div>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -1285,14 +1312,14 @@ Referral is indicated if:
               Vital Signs Form
             </h2>
             <span className="text-l text-gray-200">
-            To record a patient&apos;s vital signs, first type the patient&apos;s name
-              in the search bar or choose from the list provided. Then, go to
-              the &quot;Vital Signs&quot; section and enter the necessary information such
-              as blood pressure, temperature, respiratory rate, pulse rate, and
-              oxygen saturation. If you have any additional observations or
-              notes, you can write them in the comments section. Once all the
-              details are filled in, click the &quot;Save&quot; button to save the
-              information.
+              To record a patient&apos;s vital signs, first type the
+              patient&apos;s name in the search bar or choose from the list
+              provided. Then, go to the &quot;Vital Signs&quot; section and
+              enter the necessary information such as blood pressure,
+              temperature, respiratory rate, pulse rate, and oxygen saturation.
+              If you have any additional observations or notes, you can write
+              them in the comments section. Once all the details are filled in,
+              click the &quot;Save&quot; button to save the information.
             </span>
           </div>
 
@@ -1368,59 +1395,59 @@ Referral is indicated if:
 
               {/* Patient Info */}
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-            <div>
+                <div>
                   <p className="text-sm font-medium text-gray-500">
                     Patient Name
                   </p>
                   <p className="text-lg font-semibold text-gray-900">
                     {patientInfo.fullName || "Not selected"}
                   </p>
-            </div>
-            <div>
+                </div>
+                <div>
                   <p className="text-sm font-medium text-gray-500">
                     Date of Service
                   </p>
                   <p className="text-lg font-semibold text-gray-900">
                     {patientInfo.dateToday}
                   </p>
-            </div>
-            <div>
+                </div>
+                <div>
                   <p className="text-sm font-medium text-gray-500">Physician</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {selectedNurse
                       ? `${selectedNurse.full_name}, ${selectedNurse.position}`
                       : "Not selected"}
                   </p>
-            </div>
-            <div>
+                </div>
+                <div>
                   <p className="text-sm font-medium text-gray-500">Age</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {patientInfo.age || "Not available"}
                   </p>
-            </div>
-            <div>
+                </div>
+                <div>
                   <p className="text-sm font-medium text-gray-500">Gender</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {patientInfo.gender || "Not available"}
                   </p>
-          </div>
-        </div>
+                </div>
+              </div>
 
               {/* Vital Signs Section */}
-                <div>
+              <div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">
                   Vital Signs
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Blood Pressure
                     </label>
-                  <input
-                    type="text"
-                    name="bloodPressure"
-                    value={newEntry.bloodPressure}
-                    onChange={handleInputChange}
+                    <input
+                      type="text"
+                      name="bloodPressure"
+                      value={newEntry.bloodPressure}
+                      onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       placeholder="e.g. 120/80"
                       required
@@ -1448,16 +1475,16 @@ Referral is indicated if:
                         }
                         return null;
                       })()}
-                </div>
-                <div>
+                  </div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Temperature
                     </label>
-                  <input
+                    <input
                       type="number"
-                    name="temperature"
-                    value={newEntry.temperature}
-                    onChange={handleInputChange}
+                      name="temperature"
+                      value={newEntry.temperature}
+                      onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       placeholder="°C"
                       required
@@ -1480,16 +1507,16 @@ Referral is indicated if:
                         }
                         return null;
                       })()}
-                </div>
-                <div>
+                  </div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Pulse Rate
                     </label>
-                  <input
+                    <input
                       type="number"
-                    name="pulseRate"
-                    value={newEntry.pulseRate}
-                    onChange={handleInputChange}
+                      name="pulseRate"
+                      value={newEntry.pulseRate}
+                      onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       placeholder="bpm"
                       required
@@ -1514,16 +1541,16 @@ Referral is indicated if:
                         }
                         return null;
                       })()}
-                </div>
-                <div>
+                  </div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Respiration Rate
                     </label>
-                  <input
+                    <input
                       type="number"
-                    name="respirationRate"
-                    value={newEntry.respirationRate}
-                    onChange={handleInputChange}
+                      name="respirationRate"
+                      value={newEntry.respirationRate}
+                      onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       placeholder="breaths/min"
                       required
@@ -1541,53 +1568,53 @@ Referral is indicated if:
                               <p className="text-sm mt-1 whitespace-pre-line">
                                 {respStatus.intervention}
                               </p>
-                </div>
+                            </div>
                           );
                         }
                         return null;
                       })()}
-                </div>
-                <div>
+                  </div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Height (cm)
                     </label>
-                  <input
+                    <input
                       type="number"
-                    name="height"
-                    value={newEntry.height}
-                    onChange={handleInputChange}
+                      name="height"
+                      value={newEntry.height}
+                      onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Enter height in cm (max 999.99)"
                       step="0.01"
                       max="999.99"
                       required
-                  />
-                </div>
-                <div>
+                    />
+                  </div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Weight (kg)
                     </label>
-                  <input
+                    <input
                       type="number"
                       name="weight"
                       value={newEntry.weight}
-                    onChange={handleInputChange}
+                      onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Enter weight in kg (max 999.99)"
                       step="0.01"
                       max="999.99"
                       required
-                  />
-                </div>
-                <div>
+                    />
+                  </div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Oxygen Saturation
                     </label>
-                  <input
+                    <input
                       type="number"
                       name="oxygen"
                       value={newEntry.oxygen}
-                    onChange={handleInputChange}
+                      onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       placeholder="%"
                       required
@@ -1607,7 +1634,7 @@ Referral is indicated if:
                               <p className="text-sm mt-1 whitespace-pre-line">
                                 {oxygenStatus.intervention}
                               </p>
-                </div>
+                            </div>
                           );
                         }
                         return null;
@@ -1617,16 +1644,16 @@ Referral is indicated if:
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Comments
                     </label>
-                  <input
-                    type="text"
-                    name="comments"
-                    value={newEntry.comments}
-                    onChange={handleInputChange}
+                    <input
+                      type="text"
+                      name="comments"
+                      value={newEntry.comments}
+                      onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Additional notes"
-                  />
+                      placeholder="Additional notes"
+                    />
+                  </div>
                 </div>
-              </div>
               </div>
 
               {/* Add BMI display after height and weight */}
@@ -1662,12 +1689,12 @@ Referral is indicated if:
                 >
                   Cancel
                 </button>
-              <button
-                type="submit"
+                <button
+                  type="submit"
                   className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
-              >
+                >
                   Save and Continue
-              </button>
+                </button>
               </div>
             </form>
 
@@ -1677,10 +1704,10 @@ Referral is indicated if:
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">
                   Vital Signs History
                 </h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Date & Time
                         </th>
@@ -1743,9 +1770,9 @@ Referral is indicated if:
                         <th className="px-6 py-2 text-left text-xs text-gray-500"></th>
                         <th className="px-6 py-2 text-left text-xs text-gray-500"></th>
                         <th className="px-6 py-2 text-left text-xs text-gray-500"></th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
                       {vitalSigns.map((record, index) => {
                         const heightInMeters = record.height / 100;
                         const bmi =
@@ -1911,11 +1938,11 @@ Referral is indicated if:
                                 </button>
                               </div>
                             </td>
-                    </tr>
+                          </tr>
                         );
                       })}
-                </tbody>
-              </table>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

@@ -1542,7 +1542,7 @@ const SkinAssessmentPageContent = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Physician</p>
+                  <p className="text-sm font-medium text-gray-500">Nurse</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {attending || "Not available"}
                   </p>
@@ -2256,7 +2256,7 @@ const SkinAssessmentPageContent = () => {
 
                   <div className="mt-6">
                     <h4 className="text-lg font-medium text-gray-700 mb-4">
-                      Physician Notes
+                      Nurse Notes
                     </h4>
 
                     <div className="space-y-6">
@@ -2323,7 +2323,7 @@ const SkinAssessmentPageContent = () => {
                         Date & Time
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Nurse/Physician
+                        Nurse
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions

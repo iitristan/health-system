@@ -224,14 +224,14 @@ const VaccinationPageContent = () => {
 
   const handleNewRecord = () => {
     setFormData({
-      date: '',
-      time: '',
-      vaccineType: '',
-      previousVaccinations: '',
-      allergies: '',
-      currentMedications: '',
-      healthConditions: '',
-      physician: selectedNurse ? `${selectedNurse.full_name}` : ''
+      date: "",
+      time: "",
+      vaccineType: "",
+      previousVaccinations: "",
+      allergies: "",
+      currentMedications: "",
+      healthConditions: "",
+      physician: selectedNurse ? `${selectedNurse.full_name}` : "",
     });
   };
 
@@ -267,14 +267,6 @@ const VaccinationPageContent = () => {
             <p className="mt-1 text-lg text-indigo-200">
               Manage and view your vaccination records
             </p>
-            <span className="text-sm text-gray-200">
-              To request services that the school clinic provides, select what
-              kind of service is requested and fill in the request form which
-              contains basic information, time and date of requested service
-              needed, and other relevant data. Submit the request form and wait
-              for the request to be accepted by the school clinic. Be sure to
-              check within your email for confirmation of your request.
-            </span>
           </div>
 
           <button
@@ -306,6 +298,14 @@ const VaccinationPageContent = () => {
             <h2 className="text-2xl font-semibold text-white">
               Vaccination Request Form
             </h2>
+            <span className="text-sm text-gray-200">
+              To request services that the school clinic provides, select what
+              kind of service is requested and fill in the request form which
+              contains basic information, time and date of requested service
+              needed, and other relevant data. Submit the request form and wait
+              for the request to be accepted by the school clinic. Be sure to
+              check within your email for confirmation of your request.
+            </span>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 space-y-10">
@@ -398,7 +398,7 @@ const VaccinationPageContent = () => {
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Physician</p>
+                <p className="text-sm font-medium text-gray-500">Nurse</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {selectedNurse
                     ? `${selectedNurse.full_name} (${selectedNurse.position})`
@@ -594,7 +594,7 @@ const VaccinationPageContent = () => {
                         Previous Vaccinations
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Physician
+                        Nurse
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions

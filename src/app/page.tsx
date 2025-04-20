@@ -72,19 +72,22 @@ export default function EHRDashboard() {
         // Fetch nurses
         const { data: nursesData, error: nursesError } = await supabase
           .from("nurses")
-          .select("id, full_name, position, email, signature, created_at, updated_at")
+          .select(
+            "id, full_name, position, email, signature, created_at, updated_at"
+          )
           .order("full_name");
 
         if (nursesError) {
           console.error("Error fetching nurses:", nursesError);
           setError("Failed to load nurses. Please try again.");
         } else {
-          const formattedNurses = nursesData?.map(nurse => ({
-            ...nurse,
-            created_at: nurse.created_at || new Date().toISOString(),
-            updated_at: nurse.updated_at || new Date().toISOString()
-          })) || [];
-          
+          const formattedNurses =
+            nursesData?.map((nurse) => ({
+              ...nurse,
+              created_at: nurse.created_at || new Date().toISOString(),
+              updated_at: nurse.updated_at || new Date().toISOString(),
+            })) || [];
+
           setNurses(formattedNurses);
           setFilteredNurses(formattedNurses);
         }
@@ -102,7 +105,9 @@ export default function EHRDashboard() {
       setFilteredPatients(patients);
     } else {
       const filteredP = patients.filter((patient) =>
-        patient.full_name.toLowerCase().includes(patientSearchQuery.toLowerCase())
+        patient.full_name
+          .toLowerCase()
+          .includes(patientSearchQuery.toLowerCase())
       );
       setFilteredPatients(filteredP);
     }
@@ -182,7 +187,7 @@ export default function EHRDashboard() {
                   />
                 </svg>
                 <span className="text-sm font-medium text-indigo-700">
-                  Welcome, {selectedNurse?.full_name || 'Guest'}
+                  Welcome, {selectedNurse?.full_name || "Guest"}
                 </span>
               </div>
               <button
@@ -243,14 +248,27 @@ export default function EHRDashboard() {
           <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-md">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                <svg
+                  className="h-5 w-5 text-yellow-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">Important Notice</h3>
+                <h3 className="text-sm font-medium text-yellow-800">
+                  Important Notice
+                </h3>
                 <div className="mt-2 text-sm text-yellow-700">
-                  <p>Please select a staff from the list before accessing any forms or services. This selection will be used for:</p>
+                  <p>
+                    Please select a staff from the list before accessing any
+                    forms or services. This selection will be used for:
+                  </p>
                   <ul className="mt-2 list-disc list-inside">
                     <li>Form authentication and signing</li>
                     <li>Tracking medical records</li>
@@ -268,13 +286,32 @@ export default function EHRDashboard() {
             {/* Patients Section */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
               <div className="p-4 border-b border-gray-200">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-medium text-gray-900">
-                    Patients
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    {filteredPatients.length} patients
-                  </p>
+                <div className="flex flex-col space-y-2 mb-4">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-lg font-semibold text-gray-800">
+                      Patients
+                    </h2>
+                    <span className="px-3 py-1 text-sm font-medium text-blue-700 bg-blue-100 rounded-full">
+                      {filteredPatients.length} patients
+                    </span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-md">
+                    <svg
+                      className="h-4 w-4 mr-2 text-gray-500"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <p>
+                      EHR is Specific for Grades 1-6 (Ages 6-12) for accurate
+                      ranges
+                    </p>
+                  </div>
                 </div>
                 <div className="relative">
                   <input
@@ -372,7 +409,8 @@ export default function EHRDashboard() {
                 {!selectedNurse && (
                   <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                     <p className="text-sm text-yellow-800">
-                      Please select a staff before accessing any forms. This will be used for signing and authentication.
+                      Please select a staff before accessing any forms. This
+                      will be used for signing and authentication.
                     </p>
                   </div>
                 )}
@@ -480,58 +518,58 @@ export default function EHRDashboard() {
           {/* Dashboard Cards */}
           <div className="flex-1">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Patient Information */}
-          <DashboardCard 
-            title="Patient Information"
-            description="View and manage patient demographics and personal details"
+              {/* Patient Information */}
+              <DashboardCard
+                title="Patient Information"
+                description="View and manage patient demographics and personal details"
                 onClick={() => router.push("/patient-information")}
-            icon={<UserIcon />}
-          />
-          
-          {/* Vital Signs */}
-          <DashboardCard 
-            title="Vital Signs"
-            description="Record and track patient vitals over time"
+                icon={<UserIcon />}
+              />
+
+              {/* Vital Signs */}
+              <DashboardCard
+                title="Vital Signs"
+                description="Record and track patient vitals over time"
                 onClick={() => router.push("/vital-signs")}
-            icon={<HeartIcon />}
-          />
-          
-          {/* Health History */}
-          <DashboardCard 
-            title="Health History"
-            description="Document past medical conditions and treatments"
+                icon={<HeartIcon />}
+              />
+
+              {/* Health History */}
+              <DashboardCard
+                title="Health History"
+                description="Document past medical conditions and treatments"
                 onClick={() => router.push("/health-history")}
-            icon={<HistoryIcon />}
-          />
-          
-          {/* Health Assessment */}
-          <DashboardCard 
-            title="Health Assessment"
+                icon={<HistoryIcon />}
+              />
+
+              {/* Health Assessment */}
+              <DashboardCard
+                title="Health Assessment"
                 description="Comprehensive health evaluation tools. Includes Physical and Health Status, Dietary and Nutritional Assessment, Psychosocial and Behavioral Factors, Nail Assessment, Hair Assessment, Skin Assessment"
-            icon={<ClipboardIcon />}
+                icon={<ClipboardIcon />}
                 onClick={() => router.push("/health-assessment")}
               ></DashboardCard>
-          
-          {/* Medication Administration */}
-          <DashboardCard 
-            title="Medication Administration"
-            description="Track and manage medication schedules"
+
+              {/* Medication Administration */}
+              <DashboardCard
+                title="Medication Administration"
+                description="Track and manage medication schedules"
                 onClick={() => router.push("/medication-admin")}
-            icon={<PillIcon />}
-          />
-          
-              {/* Nurse Notes */}
-          <DashboardCard 
-                title="Nurse Notes"
-            description="Clinical observations and assessments"
-                onClick={() => router.push("/nurses-notes")}
-            icon={<NotebookIcon />}
+                icon={<PillIcon />}
               />
-          
-          {/* Services */}
-          <DashboardCard 
-            title="Services"
-            description="Access various healthcare services"
+
+              {/* Nurse Notes */}
+              <DashboardCard
+                title="Nurse Notes"
+                description="Clinical observations and assessments"
+                onClick={() => router.push("/nurses-notes")}
+                icon={<NotebookIcon />}
+              />
+
+              {/* Services */}
+              <DashboardCard
+                title="Services"
+                description="Access various healthcare services"
                 icon={<ServicesIcon />}
               >
                 <div className="mt-4 space-y-2">
@@ -683,9 +721,9 @@ function DashboardCard({
   };
 
   return (
-    <div 
+    <div
       className={`bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-md ${
-        !selectedNurse ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+        !selectedNurse ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
       }`}
       onClick={handleClick}
     >

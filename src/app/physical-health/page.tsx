@@ -274,7 +274,9 @@ const PhysicalHealthPageContent = () => {
       day: "numeric",
       year: "numeric",
     }),
-    physician: selectedNurse ? `${selectedNurse.full_name}, ${selectedNurse.position}` : "N/A",
+    physician: selectedNurse
+      ? `${selectedNurse.full_name}, ${selectedNurse.position}`
+      : "N/A",
     age: "",
     gender: "",
   });
@@ -282,9 +284,9 @@ const PhysicalHealthPageContent = () => {
   // Add effect to update physician info when selectedNurse changes
   useEffect(() => {
     if (selectedNurse) {
-      setPatientInfo(prev => ({
+      setPatientInfo((prev) => ({
         ...prev,
-        physician: `${selectedNurse.full_name}, ${selectedNurse.position}`
+        physician: `${selectedNurse.full_name}, ${selectedNurse.position}`,
       }));
     }
   }, [selectedNurse]);
@@ -303,12 +305,14 @@ const PhysicalHealthPageContent = () => {
           if (error) throw error;
 
           if (patientData) {
-            setPatientInfo(prev => ({
+            setPatientInfo((prev) => ({
               ...prev,
               fullName: patientData.full_name,
               age: patientData.age || "N/A",
               gender: patientData.gender || "N/A",
-              physician: selectedNurse ? `${selectedNurse.full_name}, ${selectedNurse.position}` : "N/A"
+              physician: selectedNurse
+                ? `${selectedNurse.full_name}, ${selectedNurse.position}`
+                : "N/A",
             }));
           }
         } catch (error) {
@@ -516,7 +520,9 @@ const PhysicalHealthPageContent = () => {
     }
 
     if (!selectedNurse) {
-      alert("No nurse selected. Please select a staff from the dashboard first.");
+      alert(
+        "No nurse selected. Please select a staff from the dashboard first."
+      );
       return;
     }
 
@@ -525,18 +531,18 @@ const PhysicalHealthPageContent = () => {
       const submissionData = {
         full_name: decodeURIComponent(patientName),
         physician_id: selectedNurse.id,
-        date_of_service: new Date().toISOString().split('T')[0],
-        
+        date_of_service: new Date().toISOString().split("T")[0],
+
         // Physical Activity Level
         exercise_regularly: exerciseRegularly,
         medical_conditions: medicalConditions,
         medical_conditions_specify: medicalConditionsSpecify,
         activities,
-        
+
         // General Appearance
         posture,
         cleanliness,
-        
+
         // Physical Findings
         eyes_normal: eyesNormal,
         pale_conjunctiva: paleConjunctiva,
@@ -547,20 +553,20 @@ const PhysicalHealthPageContent = () => {
         localized_weakness: localizedWeakness,
         associated_symptoms: associatedSymptoms,
         possible_causes: possibleCauses,
-        
+
         // Lab Results - CBC
         hemoglobin: labResults.cbc.hemoglobin,
         hematocrit: labResults.cbc.hematocrit,
         rbc_count: labResults.cbc.rbc,
         wbc_count: labResults.cbc.wbc,
         platelets_count: labResults.cbc.platelets,
-        
+
         // Lab Results - Electrolytes
         sodium: labResults.electrolytes.sodium,
         potassium: labResults.electrolytes.potassium,
         calcium: labResults.electrolytes.calcium,
         magnesium: labResults.electrolytes.magnesium,
-        
+
         // Lab Results - Protein and Nutrition
         albumin: labResults.proteinNutrition.albumin,
         globulin: labResults.proteinNutrition.globulin,
@@ -568,7 +574,7 @@ const PhysicalHealthPageContent = () => {
         direct_bilirubin: labResults.proteinNutrition.directBilirubin,
         indirect_bilirubin: labResults.proteinNutrition.indirectBilirubin,
         total_bilirubin: labResults.proteinNutrition.totalBilirubin,
-        
+
         // Lab Results - Glucose and Metabolism
         glucose: labResults.glucoseMetabolism.glucose,
         urea: labResults.glucoseMetabolism.urea,
@@ -578,7 +584,7 @@ const PhysicalHealthPageContent = () => {
         cholesterol_ldl: labResults.glucoseMetabolism.cholesterolLDL,
         triglycerides: labResults.glucoseMetabolism.triglycerides,
         hemoglobin_a1c: labResults.glucoseMetabolism.hemoglobinA1C,
-        
+
         // Anthropometric Data
         height,
         weight,
@@ -586,21 +592,21 @@ const PhysicalHealthPageContent = () => {
         body_build: bodyBuild,
         signs_of_distress: signsOfDistress,
         mood_behavior: moodBehavior,
-        
+
         // Oral Health
         oral_health: oralHealth,
-        
+
         // Nose
         nasal_discharge: nasalDischarge,
         mucus_color: mucusColor,
         mucus_consistency: mucusConsistency,
         nose_shape: noseShape,
         nasal_obstruction: nasalObstruction,
-        
+
         // Ears
         external_ear: externalEar,
         ear_canal: earCanal,
-        hearing
+        hearing,
       };
 
       console.log("Submitting data:", submissionData);
@@ -721,8 +727,11 @@ const PhysicalHealthPageContent = () => {
     return { status: "", color: "", intervention: "" };
   };
 
-  const [historyRecords, setHistoryRecords] = useState<PhysicalHealthRecord[]>([]);
-  const [selectedRecord, setSelectedRecord] = useState<PhysicalHealthRecord | null>(null);
+  const [historyRecords, setHistoryRecords] = useState<PhysicalHealthRecord[]>(
+    []
+  );
+  const [selectedRecord, setSelectedRecord] =
+    useState<PhysicalHealthRecord | null>(null);
 
   // Move fetchHistoryRecords outside of useEffect
   const fetchHistoryRecords = async () => {
@@ -749,13 +758,13 @@ const PhysicalHealthPageContent = () => {
               if (!nurseError && nurseData) {
                 return {
                   ...record,
-                  physician_name: `${nurseData.full_name}, ${nurseData.position}`
+                  physician_name: `${nurseData.full_name}, ${nurseData.position}`,
                 };
               }
             }
             return {
               ...record,
-              physician_name: "Unknown"
+              physician_name: "Unknown",
             };
           })
         );
@@ -774,7 +783,7 @@ const PhysicalHealthPageContent = () => {
 
   const handleViewRecord = (record: PhysicalHealthRecord) => {
     setSelectedRecord(record);
-    
+
     // Set form data based on the selected record
     setExerciseRegularly(record.exercise_regularly);
     setMedicalConditions(record.medical_conditions);
@@ -797,7 +806,7 @@ const PhysicalHealthPageContent = () => {
     setBodyBuild(record.body_build);
     setSignsOfDistress(record.signs_of_distress);
     setMoodBehavior(record.mood_behavior);
-    
+
     // Set lab results
     setLabResults({
       cbc: {
@@ -834,13 +843,15 @@ const PhysicalHealthPageContent = () => {
     });
 
     // Set oral health
-    setOralHealth(record.oral_health || {
-      healthy: true,
-      foulOdor: false,
-      swollenGums: "",
-      bleedingGums: "",
-      mouthUlcers: "",
-    });
+    setOralHealth(
+      record.oral_health || {
+        healthy: true,
+        foulOdor: false,
+        swollenGums: "",
+        bleedingGums: "",
+        mouthUlcers: "",
+      }
+    );
 
     // Set nose data
     setNasalDischarge(record.nasal_discharge || "");
@@ -855,7 +866,7 @@ const PhysicalHealthPageContent = () => {
     setHearing(record.hearing || "");
 
     // Scroll to the top of the form
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleNewRecord = () => {
@@ -872,12 +883,12 @@ const PhysicalHealthPageContent = () => {
     ]);
     setPosture(""); // Reset to unselected
     setCleanliness(""); // Reset to unselected
-    
+
     // Reset eyes to unselected state
     setEyesNormal(false); // Changed from true to false
     setPaleConjunctiva({ present: false, severity: "" });
     setDryEyes({ present: false, frequency: "" });
-    
+
     // Reset muscle mass to unselected state
     setMuscleMassNormal(false); // Changed from true to false
     setLossOfMuscleMass("");
@@ -885,14 +896,14 @@ const PhysicalHealthPageContent = () => {
     setLocalizedWeakness("");
     setAssociatedSymptoms([]); // Clear all selected symptoms
     setPossibleCauses([]); // Clear all selected causes
-    
+
     setHeight("");
     setWeight("");
     setBmi("");
     setBodyBuild(""); // Reset to unselected
     setSignsOfDistress([]); // Clear all selected signs
     setMoodBehavior(""); // Reset to unselected
-    
+
     // Clear lab results - reset all to unselected
     setLabResults({
       cbc: {
@@ -953,12 +964,16 @@ const PhysicalHealthPageContent = () => {
     setSelectedRecord(null);
 
     // Scroll to the top of the form
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Add delete record function
   const handleDeleteRecord = async (recordId: string) => {
-    if (!confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this record? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
@@ -1108,7 +1123,7 @@ const PhysicalHealthPageContent = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Physician</p>
+                  <p className="text-sm font-medium text-gray-500">Nurse</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {patientInfo.physician}
                   </p>
@@ -2734,15 +2749,15 @@ const PhysicalHealthPageContent = () => {
               </div>
 
               <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
                   onClick={() => router.push(`/`)}
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
                 >
                   Save Assessment
@@ -2774,7 +2789,7 @@ const PhysicalHealthPageContent = () => {
                       Date
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Physician
+                      Nurse
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Time
@@ -2786,15 +2801,19 @@ const PhysicalHealthPageContent = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {historyRecords.map((record) => (
-                    <tr 
+                    <tr
                       key={record.id}
-                      className={selectedRecord?.id === record.id ? "bg-indigo-50" : ""}
+                      className={
+                        selectedRecord?.id === record.id ? "bg-indigo-50" : ""
+                      }
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {new Date(record.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {selectedNurse ? `${selectedNurse.full_name}, ${selectedNurse.position}` : "N/A"}
+                        {selectedNurse
+                          ? `${selectedNurse.full_name}, ${selectedNurse.position}`
+                          : "N/A"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {new Date(record.created_at).toLocaleTimeString()}

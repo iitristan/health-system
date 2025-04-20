@@ -59,6 +59,80 @@ interface PsychosocialBehavioralRecord {
   anxiety: boolean;
 }
 
+interface PsychosocialStatus {
+  status: string;
+  color: string;
+  intervention: string;
+}
+
+const getParentalBondingStatus = (
+  bonding: string
+): PsychosocialStatus | null => {
+  if (bonding === "WEAK") {
+    return {
+      status: "Weak Parental Bonding & Emotional Support",
+      color: "bg-red-100 text-red-800",
+      intervention: `1. Encourage parents/guardians to stay in touch with their children
+2. Organize workshops and support groups that educate parents about child development, effective parenting skills, and the importance of emotional support
+3. Implement home visits to assess family dynamics, the living environment, and the parent's ability to meet their child's needs`,
+    };
+  }
+  return null;
+};
+
+const getDevelopmentalMilestonesStatus = (
+  milestones: string
+): PsychosocialStatus | null => {
+  if (milestones === "Delayed" || milestones === "Severely Delayed") {
+    return {
+      status: "Delayed or Severely Delayed Developmental Milestones",
+      color: "bg-yellow-100 text-yellow-800",
+      intervention: `1. Tailor programs that can be designed to address specific developmental milestones, focusing on cognitive, motor, and language skills
+2. Educate families about developmental milestones, parenting strategies, and available community resources
+3. Refer families to intervention programs that offer specialized services
+4. Implement ongoing assessments to track the child's development closely
+5. Encourage families to provide rich, engaging activities at home and in the community`,
+    };
+  }
+  return null;
+};
+
+const getTraumaExposureStatus = (
+  exposure: boolean
+): PsychosocialStatus | null => {
+  if (exposure) {
+    return {
+      status: "Exposure to Trauma Detected",
+      color: "bg-red-100 text-red-800",
+      intervention: `• Refer the child to a mental health professional for trauma-informed assessment and therapy
+• Collaborate with social workers or child protection services
+• Establish a safe and supportive environment in school and at home
+• Implement trauma-informed care practices among caregivers and educators
+• Encourage stable relationships with caring adults through mentoring programs`,
+    };
+  }
+  return null;
+};
+
+const getEmotionalDistressStatus = (distress: {
+  irritability: boolean;
+  apathy: boolean;
+  anxiety: boolean;
+}): PsychosocialStatus | null => {
+  if (distress.irritability || distress.apathy || distress.anxiety) {
+    return {
+      status: "Signs of Emotional Distress Detected",
+      color: "bg-yellow-100 text-yellow-800",
+      intervention: `• Conduct a comprehensive emotional and behavioral assessment
+• Provide counseling services that focus on building emotional regulation
+• Engage the child in structured routines and therapeutic play
+• Involve caregivers in family therapy or parenting support programs
+• Monitor emotional well-being regularly`,
+    };
+  }
+  return null;
+};
+
 export default function PsychosocialBehavioralWrapper() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -80,7 +154,9 @@ function PsychosocialBehavioralPage() {
       day: "numeric",
       year: "numeric",
     }),
-    physician: selectedNurse ? `${selectedNurse.full_name}, ${selectedNurse.position}` : "N/A",
+    physician: selectedNurse
+      ? `${selectedNurse.full_name}, ${selectedNurse.position}`
+      : "N/A",
     age: "",
     gender: "",
   });
@@ -88,8 +164,11 @@ function PsychosocialBehavioralPage() {
   const [patients, setPatients] = useState<Array<{ full_name: string }>>([]);
   const [selectedPatient, setSelectedPatient] = useState("");
 
-  const [historyRecords, setHistoryRecords] = useState<PsychosocialBehavioralRecord[]>([]);
-  const [selectedRecord, setSelectedRecord] = useState<PsychosocialBehavioralRecord | null>(null);
+  const [historyRecords, setHistoryRecords] = useState<
+    PsychosocialBehavioralRecord[]
+  >([]);
+  const [selectedRecord, setSelectedRecord] =
+    useState<PsychosocialBehavioralRecord | null>(null);
 
   // Add state for trauma exposure
   const [traumaExposure, setTraumaExposure] = useState<string>("");
@@ -138,9 +217,9 @@ function PsychosocialBehavioralPage() {
   // Add effect to update physician info when selectedNurse changes
   useEffect(() => {
     if (selectedNurse) {
-      setPatientInfo(prev => ({
+      setPatientInfo((prev) => ({
         ...prev,
-        physician: `${selectedNurse.full_name}, ${selectedNurse.position}`
+        physician: `${selectedNurse.full_name}, ${selectedNurse.position}`,
       }));
     }
   }, [selectedNurse]);
@@ -197,10 +276,11 @@ function PsychosocialBehavioralPage() {
     },
   });
 
+  // Update handleInputChange with proper typing
   const handleInputChange = (
     section: keyof FormData,
     field: string,
-    value: any
+    value: string | boolean
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -211,18 +291,21 @@ function PsychosocialBehavioralPage() {
     }));
   };
 
+  // Update handleNestedInputChange with proper typing
   const handleNestedInputChange = (
     section: keyof FormData,
     parentField: string,
     field: string,
-    value: any
+    value: string | boolean
   ) => {
     setFormData((prev) => ({
       ...prev,
       [section]: {
         ...prev[section],
         [parentField]: {
-          ...(prev[section] as any)[parentField],
+          ...(
+            prev[section] as Record<string, Record<string, string | boolean>>
+          )[parentField],
           [field]: value,
         },
       },
@@ -256,13 +339,13 @@ function PsychosocialBehavioralPage() {
               if (!nurseError && nurseData) {
                 return {
                   ...record,
-                  physician_name: `${nurseData.full_name}, ${nurseData.position}`
+                  physician_name: `${nurseData.full_name}, ${nurseData.position}`,
                 };
               }
             }
             return {
               ...record,
-              physician_name: "Unknown"
+              physician_name: "Unknown",
             };
           })
         );
@@ -286,7 +369,9 @@ function PsychosocialBehavioralPage() {
     }
 
     if (!selectedNurse) {
-      alert("No nurse selected. Please select a staff from the dashboard first.");
+      alert(
+        "No nurse selected. Please select a staff from the dashboard first."
+      );
       return;
     }
 
@@ -304,13 +389,15 @@ function PsychosocialBehavioralPage() {
         food_preferences: formData.eatingBehavior.foodPreferences,
         refuses_food: formData.eatingBehavior.feedingDifficulties.refusesFood,
         choking_risk: formData.eatingBehavior.feedingDifficulties.chokingRisk,
-        texture_aversion: formData.eatingBehavior.feedingDifficulties.textureAversion,
+        texture_aversion:
+          formData.eatingBehavior.feedingDifficulties.textureAversion,
         parental_bonding: formData.emotionalHealth.parentalBonding,
-        developmental_milestones: formData.emotionalHealth.developmentalMilestones,
-        trauma_exposure: traumaExposure === "Yes",
+        developmental_milestones:
+          formData.emotionalHealth.developmentalMilestones,
+        trauma_exposure: formData.emotionalHealth.traumaExposure,
         irritability: formData.emotionalHealth.emotionalDistress.irritability,
         apathy: formData.emotionalHealth.emotionalDistress.apathy,
-        anxiety: formData.emotionalHealth.emotionalDistress.anxiety
+        anxiety: formData.emotionalHealth.emotionalDistress.anxiety,
       };
 
       console.log("Submitting data:", submissionData);
@@ -340,7 +427,7 @@ function PsychosocialBehavioralPage() {
         skippingMeals: record.skipping_meals,
         limitedAccess: record.limited_access,
         foodAssistance: record.food_assistance,
-        other: record.other_food_insecurity
+        other: record.other_food_insecurity,
       },
       eatingBehavior: {
         appetite: record.appetite,
@@ -349,8 +436,8 @@ function PsychosocialBehavioralPage() {
         feedingDifficulties: {
           refusesFood: record.refuses_food,
           chokingRisk: record.choking_risk,
-          textureAversion: record.texture_aversion
-        }
+          textureAversion: record.texture_aversion,
+        },
       },
       emotionalHealth: {
         parentalBonding: record.parental_bonding,
@@ -359,9 +446,9 @@ function PsychosocialBehavioralPage() {
         emotionalDistress: {
           irritability: record.irritability,
           apathy: record.apathy,
-          anxiety: record.anxiety
-        }
-      }
+          anxiety: record.anxiety,
+        },
+      },
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -375,7 +462,7 @@ function PsychosocialBehavioralPage() {
         skippingMeals: false,
         limitedAccess: false,
         foodAssistance: false,
-        other: ""
+        other: "",
       },
       eatingBehavior: {
         appetite: "",
@@ -384,8 +471,8 @@ function PsychosocialBehavioralPage() {
         feedingDifficulties: {
           refusesFood: false,
           chokingRisk: false,
-          textureAversion: false
-        }
+          textureAversion: false,
+        },
       },
       emotionalHealth: {
         parentalBonding: "",
@@ -394,16 +481,20 @@ function PsychosocialBehavioralPage() {
         emotionalDistress: {
           irritability: false,
           apathy: false,
-          anxiety: false
-        }
-      }
+          anxiety: false,
+        },
+      },
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Add delete record function
   const handleDeleteRecord = async (recordId: string) => {
-    if (!confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this record? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
@@ -535,7 +626,7 @@ function PsychosocialBehavioralPage() {
             </div>
 
             {/* Patient Info */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
               <div>
                 <p className="text-sm font-medium text-gray-500">
                   Patient Name
@@ -553,7 +644,7 @@ function PsychosocialBehavioralPage() {
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Physician</p>
+                <p className="text-sm font-medium text-gray-500">Nurse</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {patientInfo.physician}
                 </p>
@@ -794,139 +885,309 @@ function PsychosocialBehavioralPage() {
                 </h3>
 
                 {/* Parental Bonding */}
-                <div className="mb-4">
+                <div className="space-y-4">
                   <p className="font-medium mb-2">
                     Parental Bonding & Emotional Support:
                   </p>
-                  <div className="space-y-2">
-                    {["Strong", "Moderate", "Weak"].map((option) => (
-                      <label key={option} className="flex items-center">
-                        <input
-                          type="radio"
-                          checked={
-                            formData.emotionalHealth.parentalBonding === option
-                          }
-                          onChange={() =>
-                            handleInputChange(
-                              "emotionalHealth",
-                              "parentalBonding",
-                              option
-                            )
-                          }
-                          className="h-4 w-4 text-blue-600"
-                        />
-                        <span className="ml-2">{option}</span>
-                      </label>
-                    ))}
+                  <div className="flex items-center space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="parentalBonding"
+                        value="Strong"
+                        checked={
+                          formData.emotionalHealth.parentalBonding === "Strong"
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            "emotionalHealth",
+                            "parentalBonding",
+                            e.target.value
+                          )
+                        }
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span className="ml-2">Strong</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="parentalBonding"
+                        value="Moderate"
+                        checked={
+                          formData.emotionalHealth.parentalBonding ===
+                          "Moderate"
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            "emotionalHealth",
+                            "parentalBonding",
+                            e.target.value
+                          )
+                        }
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span className="ml-2">Moderate</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="parentalBonding"
+                        value="WEAK"
+                        checked={
+                          formData.emotionalHealth.parentalBonding === "WEAK"
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            "emotionalHealth",
+                            "parentalBonding",
+                            e.target.value
+                          )
+                        }
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span className="ml-2">Weak</span>
+                    </label>
                   </div>
+                  {formData.emotionalHealth.parentalBonding === "WEAK" && (
+                    <div className="p-3 rounded bg-red-100 text-red-800">
+                      <p className="font-medium">
+                        Weak Parental Bonding & Emotional Support
+                      </p>
+                      <p className="text-sm mt-1 whitespace-pre-line">
+                        1. Encourage parents/guardians to stay in touch with
+                        their children 2. Organize workshops and support groups
+                        that educate parents about child development, effective
+                        parenting skills, and the importance of emotional
+                        support 3. Implement home visits to assess family
+                        dynamics, the living environment, and the parent&apos;s
+                        ability to meet their child&apos;s needs
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Developmental Milestones */}
-                <div className="mb-4">
+                <div className="space-y-4 mt-6">
                   <p className="font-medium mb-2">Developmental Milestones:</p>
-                  <div className="space-y-2">
-                    {["On track", "Delayed", "Severely delayed"].map(
-                      (option) => (
-                        <label key={option} className="flex items-center">
-                          <input
-                            type="radio"
-                            checked={
-                              formData.emotionalHealth
-                                .developmentalMilestones === option
-                            }
-                            onChange={() =>
-                              handleInputChange(
-                                "emotionalHealth",
-                                "developmentalMilestones",
-                                option
-                              )
-                            }
-                            className="h-4 w-4 text-blue-600"
-                          />
-                          <span className="ml-2">{option}</span>
-                        </label>
-                      )
-                    )}
+                  <div className="flex items-center space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="developmentalMilestones"
+                        value="On Track"
+                        checked={
+                          formData.emotionalHealth.developmentalMilestones ===
+                          "On Track"
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            "emotionalHealth",
+                            "developmentalMilestones",
+                            e.target.value
+                          )
+                        }
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span className="ml-2">On Track</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="developmentalMilestones"
+                        value="Delayed"
+                        checked={
+                          formData.emotionalHealth.developmentalMilestones ===
+                          "Delayed"
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            "emotionalHealth",
+                            "developmentalMilestones",
+                            e.target.value
+                          )
+                        }
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span className="ml-2">Delayed</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="developmentalMilestones"
+                        value="Severely Delayed"
+                        checked={
+                          formData.emotionalHealth.developmentalMilestones ===
+                          "Severely Delayed"
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            "emotionalHealth",
+                            "developmentalMilestones",
+                            e.target.value
+                          )
+                        }
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span className="ml-2">Severely Delayed</span>
+                    </label>
                   </div>
+                  {(formData.emotionalHealth.developmentalMilestones ===
+                    "Delayed" ||
+                    formData.emotionalHealth.developmentalMilestones ===
+                      "Severely Delayed") && (
+                    <div className="p-3 rounded bg-yellow-100 text-yellow-800">
+                      <p className="font-medium">
+                        Delayed or Severely Delayed Developmental Milestones
+                      </p>
+                      <p className="text-sm mt-1 whitespace-pre-line">
+                        1. Tailor programs that can be designed to address
+                        specific developmental milestones 2. Educate families
+                        about developmental milestones and parenting strategies
+                        3. Refer families to intervention programs that offer
+                        specialized services 4. Implement ongoing assessments to
+                        track the child&apos;s development 5. Encourage families
+                        to provide rich, engaging activities at home
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Trauma Exposure */}
-                <div className="mb-4">
-                  <p className="font-medium mb-2">
-                    Exposure to Trauma (Neglect, Abuse, Domestic Violence):
-                  </p>
-                  <div className="space-y-2">
-                    {["Yes", "No"].map((option) => (
-                      <label key={option} className="flex items-center">
-                        <input
-                          type="radio"
-                          checked={traumaExposure === option}
-                          onChange={() => {
-                            setTraumaExposure(option);
-                            handleInputChange(
-                              "emotionalHealth",
-                              "traumaExposure",
-                              option === "Yes"
-                            );
-                          }}
-                          className="h-4 w-4 text-blue-600"
-                        />
-                        <span className="ml-2">{option}</span>
-                      </label>
-                    ))}
+                <div className="space-y-4 mt-6">
+                  <p className="font-medium mb-2">Exposure to Trauma:</p>
+                  <div className="flex items-center space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="traumaExposure"
+                        value="Yes"
+                        checked={formData.emotionalHealth.traumaExposure}
+                        onChange={(e) => handleInputChange("emotionalHealth", "traumaExposure", true)}
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span className="ml-2">Yes</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="traumaExposure"
+                        value="No"
+                        checked={!formData.emotionalHealth.traumaExposure}
+                        onChange={(e) => handleInputChange("emotionalHealth", "traumaExposure", false)}
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span className="ml-2">No</span>
+                    </label>
                   </div>
+                  {formData.emotionalHealth.traumaExposure && (
+                    <div className="p-3 rounded bg-red-100 text-red-800">
+                      <p className="font-medium">Exposure to Trauma Detected</p>
+                      <p className="text-sm mt-1 whitespace-pre-line">
+                        • Refer the child to a mental health professional for trauma-informed assessment
+                        • Collaborate with social workers or child protection services
+                        • Establish a safe and supportive environment
+                        • Implement trauma-informed care practices
+                        • Encourage stable relationships with caring adults
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Emotional Distress */}
-                <div className="mb-4">
+                <div className="space-y-4 mt-6">
                   <p className="font-medium mb-2">
                     Signs of Emotional Distress:
                   </p>
-                  <div className="space-y-2">
-                    {[
-                      { key: "irritability", label: "Irritability" },
-                      { key: "apathy", label: "Apathy" },
-                      { key: "anxiety", label: "Anxiety" },
-                    ].map(({ key, label }) => (
-                      <label key={key} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={
-                            formData.emotionalHealth.emotionalDistress[
-                              key as keyof typeof formData.emotionalHealth.emotionalDistress
-                            ]
-                          }
-                          onChange={(e) =>
-                            handleNestedInputChange(
-                              "emotionalHealth",
-                              "emotionalDistress",
-                              key,
-                              e.target.checked
-                            )
-                          }
-                          className="h-4 w-4 text-blue-600"
-                        />
-                        <span className="ml-2">{label}</span>
-                      </label>
-                    ))}
+                  <div className="flex items-center space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={
+                          formData.emotionalHealth.emotionalDistress
+                            .irritability
+                        }
+                        onChange={(e) =>
+                          handleNestedInputChange(
+                            "emotionalHealth",
+                            "emotionalDistress",
+                            "irritability",
+                            e.target.checked
+                          )
+                        }
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span className="ml-2">Irritability</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={
+                          formData.emotionalHealth.emotionalDistress.apathy
+                        }
+                        onChange={(e) =>
+                          handleNestedInputChange(
+                            "emotionalHealth",
+                            "emotionalDistress",
+                            "apathy",
+                            e.target.checked
+                          )
+                        }
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span className="ml-2">Apathy</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={
+                          formData.emotionalHealth.emotionalDistress.anxiety
+                        }
+                        onChange={(e) =>
+                          handleNestedInputChange(
+                            "emotionalHealth",
+                            "emotionalDistress",
+                            "anxiety",
+                            e.target.checked
+                          )
+                        }
+                        className="h-4 w-4 text-blue-600"
+                      />
+                      <span className="ml-2">Anxiety</span>
+                    </label>
                   </div>
+                  {(formData.emotionalHealth.emotionalDistress.irritability ||
+                    formData.emotionalHealth.emotionalDistress.apathy ||
+                    formData.emotionalHealth.emotionalDistress.anxiety) && (
+                    <div className="p-3 rounded bg-yellow-100 text-yellow-800">
+                      <p className="font-medium">
+                        Signs of Emotional Distress Detected
+                      </p>
+                      <p className="text-sm mt-1 whitespace-pre-line">
+                        • Conduct a comprehensive emotional and behavioral
+                        assessment • Provide counseling services for emotional
+                        regulation • Engage in structured routines and
+                        therapeutic play • Involve caregivers in family therapy
+                        • Monitor emotional well-being regularly
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </div>
-
-              <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
-                <button 
-                  type="button" 
-                  className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
-                  onClick={() => router.push(`/`)}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
-                >
-                  Save Assessment
-                </button>
+                <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
+                  <button
+                    type="button"
+                    className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
+                    onClick={() => router.push(`/`)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
+                  >
+                    Save Assessment
+                  </button>
+                </div>
               </div>
             </form>
           </div>
