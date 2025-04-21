@@ -450,7 +450,7 @@ function VitalSignsPage() {
 • Monitor BP: Recommend regular home BP monitoring and tracking readings
 
 3. Referral - (Systolic: >124 - Diastolic: >84)
-• Notify Physician: If BP remains elevated after recheck
+• Notify Nurse: If BP remains elevated after recheck
 • Referral to Pediatric Cardiologist if BP remains high over time or symptoms persist`,
       };
     }
@@ -471,7 +471,7 @@ function VitalSignsPage() {
 • Dietary Support: Suggest small, frequent meals with adequate salt if necessary
 
 3. Referral - (Systolic: 93 - 90 - Diastolic: 50)
-• Notify Physician: If BP remains low after intervention or if symptoms worsen
+• Notify Nurse: If BP remains low after intervention or if symptoms worsen
 • Referral to Pediatrician or specialist if low BP persists or is due to underlying medical condition`,
       };
     }
@@ -1412,7 +1412,7 @@ in age-appropriate language to reduce fear or panic.`,
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Physician</p>
+                  <p className="text-sm font-medium text-gray-500">Nurse</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {selectedNurse
                       ? `${selectedNurse.full_name}, ${selectedNurse.position}`
@@ -1712,7 +1712,7 @@ in age-appropriate language to reduce fear or panic.`,
                           Date & Time
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Physician
+                        Nurse
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Blood Pressure (mmHg)

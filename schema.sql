@@ -271,7 +271,15 @@ CREATE TABLE IF NOT EXISTS dietary_nutritional_records (
     -- }
     
     -- Appetite Status
-    appetite_status JSONB -- {normal: boolean, suppressed: boolean, increased: boolean}
+    appetite_status JSONB, -- {normal: boolean, suppressed: boolean, increased: boolean}
+    
+    -- Food Insecurity
+    food_insecurity JSONB -- {
+        -- skippingMeals: boolean
+        -- limitedAccess: boolean
+        -- foodAssistance: boolean
+        -- other: string
+    -- }
 );
 
 -- Create psychosocial_behavioral_records table

@@ -1063,7 +1063,13 @@ function PsychosocialBehavioralPage() {
                         name="traumaExposure"
                         value="Yes"
                         checked={formData.emotionalHealth.traumaExposure}
-                        onChange={(e) => handleInputChange("emotionalHealth", "traumaExposure", true)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "emotionalHealth",
+                            "traumaExposure",
+                            true
+                          )
+                        }
                         className="h-4 w-4 text-blue-600"
                       />
                       <span className="ml-2">Yes</span>
@@ -1074,7 +1080,13 @@ function PsychosocialBehavioralPage() {
                         name="traumaExposure"
                         value="No"
                         checked={!formData.emotionalHealth.traumaExposure}
-                        onChange={(e) => handleInputChange("emotionalHealth", "traumaExposure", false)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "emotionalHealth",
+                            "traumaExposure",
+                            false
+                          )
+                        }
                         className="h-4 w-4 text-blue-600"
                       />
                       <span className="ml-2">No</span>
@@ -1084,11 +1096,12 @@ function PsychosocialBehavioralPage() {
                     <div className="p-3 rounded bg-red-100 text-red-800">
                       <p className="font-medium">Exposure to Trauma Detected</p>
                       <p className="text-sm mt-1 whitespace-pre-line">
-                        • Refer the child to a mental health professional for trauma-informed assessment
-                        • Collaborate with social workers or child protection services
-                        • Establish a safe and supportive environment
-                        • Implement trauma-informed care practices
-                        • Encourage stable relationships with caring adults
+                        • Refer the child to a mental health professional for
+                        trauma-informed assessment • Collaborate with social
+                        workers or child protection services • Establish a safe
+                        and supportive environment • Implement trauma-informed
+                        care practices • Encourage stable relationships with
+                        caring adults
                       </p>
                     </div>
                   )}
@@ -1191,75 +1204,76 @@ function PsychosocialBehavioralPage() {
               </div>
             </form>
           </div>
-        </div>
-
-        {/* History Table */}
-        {historyRecords.length > 0 && (
-          <div className="mt-8">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold text-gray-900">
-                Assessment History
-              </h2>
-              <button
-                onClick={handleNewRecord}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-              >
-                New Record
-              </button>
-            </div>
-            <div className="bg-white shadow-md rounded-lg overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-indigo-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
-                      Date & Time
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
-                      Nurse/Physician
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {historyRecords.map((record) => (
-                    <tr
-                      key={record.id}
-                      className={
-                        selectedRecord?.id === record.id ? "bg-indigo-50" : ""
-                      }
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Date(record.date_of_service).toLocaleDateString()}{" "}
-                        at {new Date(record.created_at).toLocaleTimeString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.physician_name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => handleViewRecord(record)}
-                            className="text-indigo-600 hover:text-indigo-900"
-                          >
-                            View Record
-                          </button>
-                          <button
-                            onClick={() => handleDeleteRecord(record.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
+          {/* History Table */}
+          {historyRecords.length > 0 && (
+            <div className="mt-8">
+              <div className="flex justify-between items-center mb-4 px-4">
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  Assessment History
+                </h2>
+                <button
+                  onClick={handleNewRecord}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                >
+                  New Record
+                </button>
+              </div>
+              <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-indigo-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
+                        Date & Time
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
+                        Nurse
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {historyRecords.map((record) => (
+                      <tr
+                        key={record.id}
+                        className={
+                          selectedRecord?.id === record.id ? "bg-indigo-50" : ""
+                        }
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {new Date(
+                            record.date_of_service
+                          ).toLocaleDateString()}{" "}
+                          at {new Date(record.created_at).toLocaleTimeString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {record.physician_name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleViewRecord(record)}
+                              className="text-indigo-600 hover:text-indigo-900"
+                            >
+                              View Record
+                            </button>
+                            <button
+                              onClick={() => handleDeleteRecord(record.id)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
