@@ -28,6 +28,16 @@ interface FormData {
     visionCorrection: string;
     medications: Array<{ name: string; frequency: string }>;
   };
+  familyHistory: {
+    diabetes: boolean;
+    hypertension: boolean;
+    asthma: boolean;
+    heartDisease: boolean;
+    cancer: boolean;
+    stroke: boolean;
+    other: boolean;
+    otherDetails: string;
+  };
 }
 
 interface HealthHistoryRecord {
@@ -43,6 +53,16 @@ interface HealthHistoryRecord {
   past_surgical_history: {
     hadSurgery: string;
     surgeries: Array<{ type: string; year: string }>;
+  };
+  family_history: {
+    diabetes: boolean;
+    hypertension: boolean;
+    asthma: boolean;
+    heartDisease: boolean;
+    cancer: boolean;
+    stroke: boolean;
+    other: boolean;
+    otherDetails: string;
   };
   recent_hospitalization: string;
   health_maintenance: {
@@ -198,6 +218,16 @@ function HealthHistoryPage() {
                   { name: "Zinc Sulfate", frequency: "O.D" },
                 ],
               },
+              familyHistory: {
+                diabetes: false,
+                hypertension: false,
+                asthma: false,
+                heartDisease: false,
+                cancer: false,
+                stroke: false,
+                other: false,
+                otherDetails: "",
+              },
             });
           }
         }
@@ -265,6 +295,16 @@ function HealthHistoryPage() {
       lastEyeExam: "",
       visionCorrection: "",
       medications: [{ name: "", frequency: "" }],
+    },
+    familyHistory: {
+      diabetes: false,
+      hypertension: false,
+      asthma: false,
+      heartDisease: false,
+      cancer: false,
+      stroke: false,
+      other: false,
+      otherDetails: "",
     },
   });
 
@@ -391,6 +431,7 @@ function HealthHistoryPage() {
       chiefComplaint: record.chief_complaint,
       pastMedicalHistory: record.past_medical_conditions,
       pastSurgicalHistory: record.past_surgical_history,
+      familyHistory: record.family_history,
       recentHospitalization: record.recent_hospitalization,
       healthMaintenance: record.health_maintenance,
     });
@@ -420,6 +461,7 @@ function HealthHistoryPage() {
           past_surgical_history: formData.pastSurgicalHistory,
           recent_hospitalization: formData.recentHospitalization,
           health_maintenance: formData.healthMaintenance,
+          family_history: formData.familyHistory,
         });
 
       if (updateError) throw updateError;
@@ -466,6 +508,16 @@ function HealthHistoryPage() {
       console.error("Error deleting record:", error);
       alert("Error deleting record. Please try again.");
     }
+  };
+
+  const handleFamilyHistoryChange = (condition: keyof FormData['familyHistory'], value: boolean | string) => {
+    setFormData(prev => ({
+      ...prev,
+      familyHistory: {
+        ...prev.familyHistory,
+        [condition]: value
+      }
+    }));
   };
 
   return (
@@ -1013,6 +1065,94 @@ function HealthHistoryPage() {
                   </button>
                 </div>
 
+                {/* Family History Section */}
+                <div className="bg-white mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Family History</h3>
+                  <p className="text-sm text-gray-600 mb-4">Select all that applies:</p>
+                  
+                  <div className="space-y-3">
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={formData.familyHistory.diabetes}
+                        onChange={(e) => handleFamilyHistoryChange('diabetes', e.target.checked)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm text-gray-700">Diabetes</span>
+                    </label>
+
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={formData.familyHistory.hypertension}
+                        onChange={(e) => handleFamilyHistoryChange('hypertension', e.target.checked)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm text-gray-700">Hypertension</span>
+                    </label>
+
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={formData.familyHistory.asthma}
+                        onChange={(e) => handleFamilyHistoryChange('asthma', e.target.checked)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm text-gray-700">Asthma</span>
+                    </label>
+
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={formData.familyHistory.heartDisease}
+                        onChange={(e) => handleFamilyHistoryChange('heartDisease', e.target.checked)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm text-gray-700">Heart Disease</span>
+                    </label>
+
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={formData.familyHistory.cancer}
+                        onChange={(e) => handleFamilyHistoryChange('cancer', e.target.checked)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm text-gray-700">Cancer</span>
+                    </label>
+
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={formData.familyHistory.stroke}
+                        onChange={(e) => handleFamilyHistoryChange('stroke', e.target.checked)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm text-gray-700">Stroke</span>
+                    </label>
+
+                    <div className="flex items-center space-x-3">
+                      <label className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={formData.familyHistory.other}
+                          onChange={(e) => handleFamilyHistoryChange('other', e.target.checked)}
+                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        />
+                        <span className="text-sm text-gray-700">Others:</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.familyHistory.otherDetails}
+                        onChange={(e) => handleFamilyHistoryChange('otherDetails', e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="Specify other conditions"
+                        disabled={!formData.familyHistory.other}
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Form Actions */}
                 <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
                   <button
@@ -1062,31 +1202,10 @@ function HealthHistoryPage() {
                     Surgical History
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                    Family History
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                     Recent Hospitalization
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                    Last Checkup
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                    Last CBC
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                    Last Nutrition
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                    Last Vaccination
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                    Last Deworming
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                    Last Eye Exam
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                    Vision Correction
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
-                    Medications
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                     Actions
@@ -1101,17 +1220,21 @@ function HealthHistoryPage() {
                   if (record.past_medical_conditions.anemia)
                     medicalConditions.push("Anemia");
                   if (record.past_medical_conditions.other)
-                    medicalConditions.push(
-                      record.past_medical_conditions.other
-                    );
+                    medicalConditions.push(record.past_medical_conditions.other);
 
                   const surgeries = record.past_surgical_history.surgeries
                     .filter((surgery) => surgery.type && surgery.year)
                     .map((surgery) => `${surgery.type} (${surgery.year})`);
 
-                  const medications = record.health_maintenance.medications
-                    .filter((med) => med.name && med.frequency)
-                    .map((med) => `${med.name} (${med.frequency})`);
+                  const familyHistory = [];
+                  if (record.family_history.diabetes) familyHistory.push("Diabetes");
+                  if (record.family_history.hypertension) familyHistory.push("Hypertension");
+                  if (record.family_history.asthma) familyHistory.push("Asthma");
+                  if (record.family_history.heartDisease) familyHistory.push("Heart Disease");
+                  if (record.family_history.cancer) familyHistory.push("Cancer");
+                  if (record.family_history.stroke) familyHistory.push("Stroke");
+                  if (record.family_history.other && record.family_history.otherDetails) 
+                    familyHistory.push(record.family_history.otherDetails);
 
                   return (
                     <tr
@@ -1150,36 +1273,11 @@ function HealthHistoryPage() {
                       <td className="px-6 py-4 text-sm text-gray-900">
                         {surgeries.length > 0 ? surgeries.join(", ") : "None"}
                       </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {familyHistory.length > 0 ? familyHistory.join(", ") : "None"}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {record.recent_hospitalization || "None"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.health_maintenance.lastPediatricCheckup ||
-                          "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.health_maintenance.lastCBC || "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.health_maintenance.lastNutritionalAssessment ||
-                          "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.health_maintenance.lastVaccination || "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.health_maintenance.lastDeworming || "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.health_maintenance.lastEyeExam || "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {record.health_maintenance.visionCorrection || "N/A"}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {medications.length > 0
-                          ? medications.join(", ")
-                          : "None"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <button

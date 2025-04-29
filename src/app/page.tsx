@@ -18,6 +18,8 @@ interface Patient {
   full_name: string;
   date_of_birth: string;
   gender: string;
+  patient_number?: string;
+  age?: string;
 }
 
 interface Nurse {
@@ -58,15 +60,21 @@ export default function EHRDashboard() {
         // Fetch patients
         const { data: patientsData, error: patientsError } = await supabase
           .from("patients")
-          .select("full_name, date_of_birth, gender")
-          .order("full_name");
+          .select("id, full_name, date_of_birth, age, gender")
+          .order("created_at", { ascending: true });
 
         if (patientsError) {
           console.error("Error fetching patients:", patientsError);
           setError("Failed to load patients. Please try again.");
         } else {
-          setPatients(patientsData || []);
-          setFilteredPatients(patientsData || []);
+          // Generate patient numbers based on order
+          const patientsWithNumbers = (patientsData || []).map((patient, index) => ({
+            ...patient,
+            patient_number: (index + 1).toString().padStart(4, '0')
+          }));
+          
+          setPatients(patientsWithNumbers);
+          setFilteredPatients(patientsWithNumbers);
         }
 
         // Fetch nurses
@@ -347,6 +355,9 @@ export default function EHRDashboard() {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Patient #
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Name
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -365,6 +376,9 @@ export default function EHRDashboard() {
                             : ""
                         }`}
                       >
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {patient.patient_number || 'N/A'}
+                        </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                           {patient.full_name}
                         </td>
@@ -532,6 +546,14 @@ export default function EHRDashboard() {
                 description="Record and track patient vitals over time"
                 onClick={() => router.push("/vital-signs")}
                 icon={<HeartIcon />}
+              />
+
+              {/* TPR Input/Output */}
+              <DashboardCard
+                title="TPR Input/Output"
+                description="Record and monitor intake/output of urine and stool"
+                onClick={() => router.push("/tpr-input-output")}
+                icon={<ThermometerIcon />}
               />
 
               {/* Health History */}
@@ -769,4 +791,7 @@ function NotebookIcon() {
 }
 function ServicesIcon() {
   return <span className="text-xl">🏥</span>;
+}
+function ThermometerIcon() {
+  return <span className="text-xl">🌡️</span>;
 }

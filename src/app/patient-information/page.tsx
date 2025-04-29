@@ -11,6 +11,7 @@ interface Sibling {
 }
 
 interface PatientFormData {
+  patientNumber: string;
   fullName: string;
   dateOfBirth: string;
   age: string;
@@ -46,6 +47,7 @@ function PatientInformationPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<PatientFormData>({
+    patientNumber: "",
     fullName: "",
     dateOfBirth: "",
     age: "",
@@ -124,6 +126,131 @@ function PatientInformationPage() {
                   name,
                   age: (data.siblings_ages?.[index] || "").toString(),
                 })) || [],
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching patient data:", error);
+        }
+      }
+    };
+
+    fetchPatientData();
+  }, [patientName]);
+
+  const generatePatientNumberForExisting = async (patientId: string) => {
+    try {
+      const { count } = await supabase
+        .from('patients')
+        .select('id', { count: 'exact', head: true })
+        .lt('created_at', new Date().toISOString())
+        .order('created_at', { ascending: true });
+  
+      const patientNumber = ((count || 0) + 1).toString().padStart(4, '0');
+      
+      await supabase
+        .from('patients')
+        .update({ patient_number: patientNumber })
+        .eq('id', patientId);
+  
+      return patientNumber;
+    } catch (error) {
+      console.error('Error generating patient number:', error);
+      return patientId.slice(0, 4).padStart(4, "0");
+    }
+  };
+
+  // Generate patient number automatically
+  const generatePatientNumber = async () => {
+    try {
+      const { count } = await supabase
+        .from("patients")
+        .select("*", { count: "exact", head: true });
+      return ((count || 0) + 1).toString().padStart(4, "0");
+    } catch (error) {
+      console.error("Error generating patient number:", error);
+      return "0001"; // Fallback
+    }
+  };
+
+  useEffect(() => {
+    const initializeForm = async () => {
+      if (!patientName) {
+        const newPatientNumber = await generatePatientNumber();
+        setFormData((prev) => ({
+          ...prev,
+          patientNumber: newPatientNumber,
+          todayDate: new Date().toISOString().split("T")[0],
+        }));
+      }
+    };
+    initializeForm();
+
+    const fetchPatientData = async () => {
+      if (patientName) {
+        try {
+          const { data, error } = await supabase
+            .from("patients")
+            .select("*")
+            .eq("full_name", patientName)
+            .single();
+
+          if (error) throw error;
+
+          if (data) {
+            const patientNumber = data.patient_number || await generatePatientNumberForExisting(data.id);
+            setFormData((prev) => ({
+              ...prev,
+              patientNumber,
+              // ... rest of your mappings
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching patient data:", error);
+        }
+      }
+    };
+    fetchPatientData();
+  }, [patientName]);
+
+  useEffect(() => {
+    const today = new Date();
+    const formattedDate = today.toISOString().split("T")[0];
+
+    const initializeForm = async () => {
+      const newFormData: Partial<PatientFormData> = {
+        todayDate: formattedDate,
+      };
+
+      // Only generate patient number for new patients
+      if (!patientName) {
+        newFormData.patientNumber = await generatePatientNumber();
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        ...newFormData,
+      }));
+    };
+
+    initializeForm();
+
+    const fetchPatientData = async () => {
+      if (patientName) {
+        try {
+          const { data, error } = await supabase
+            .from("patients")
+            .select("*")
+            .eq("full_name", patientName)
+            .single();
+
+          if (error) throw error;
+
+          if (data) {
+            setFormData((prev) => ({
+              ...prev,
+              patientNumber: data.patient_number || "", // Add this line
+              fullName: data.full_name || "",
+              // ... rest of your existing data mapping
             }));
           }
         } catch (error) {
@@ -226,6 +353,7 @@ function PatientInformationPage() {
       }
 
       const patientData = {
+        patient_number: formData.patientNumber,
         full_name: formData.fullName,
         date_of_birth: formData.dateOfBirth || null,
         age: formData.age ? parseInt(formData.age) : null,
@@ -384,37 +512,54 @@ function PatientInformationPage() {
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
-                      required
-                    />
-                  </div>
-
+                {/* Left Column */}
+                <div className="space-y-4">
+                  {/* Patient Number and Full Name */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Date of Birth
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Patient Number
+                      </label>
+                      <input
+                        type="text"
+                        name="patientNumber"
+                        value={formData.patientNumber}
+                        readOnly
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100 text-black"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Full Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Date of Birth and Age */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Date of Birth <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="date"
                         name="dateOfBirth"
                         value={formData.dateOfBirth}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Age
                       </label>
                       <input
@@ -422,81 +567,85 @@ function PatientInformationPage() {
                         name="age"
                         value={formData.age}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                         min="0"
                         max="120"
                       />
                     </div>
                   </div>
 
+                  {/* Address */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Address
+                      Address <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="address1"
                       value={formData.address1}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       required
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  {/* City, State, ZIP */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        City
+                        City <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         name="city"
                         value={formData.city}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                         required
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        State
+                        State <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         name="state"
                         value={formData.state}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                        className="w-full px-4- py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        ZIP Code <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="zipCode"
+                        value={formData.zipCode}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                         required
                       />
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      ZIP Code
-                    </label>
-                    <input
-                      type="text"
-                      name="zipCode"
-                      value={formData.zipCode}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
-                      required
-                    />
-                  </div>
                 </div>
 
-                <div className="space-y-6">
+                {/* Right Column */}
+                <div className="space-y-4">
+                  {/* Contact Information */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Mobile Phone
+                      Mobile Phone <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="tel"
                       name="mobilePhone"
                       value={formData.mobilePhone}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                       required
                     />
                   </div>
@@ -510,7 +659,7 @@ function PatientInformationPage() {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                     />
                   </div>
 
@@ -523,9 +672,12 @@ function PatientInformationPage() {
                       name="signature"
                       value={formData.signature}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-black"
                     />
                   </div>
+
+                  {/* Spacer to align with left column height */}
+                  <div className="h-24"></div>
                 </div>
               </div>
             </section>

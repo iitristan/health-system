@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, type ReactElement } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import type { NextPage } from "next";
@@ -189,9 +189,12 @@ const bmiRanges: BMIRange[] = [
 
 interface PhysicalHealthRecord {
   id: string;
-  full_name: string;
-  physician_id: string;
+  patient_name: string;
+  physician_name: string;
   date_of_service: string;
+  created_at: string;
+  lab_results_url?: string;
+  other_images_urls?: string[];
   exercise_regularly: string;
   medical_conditions: string;
   medical_conditions_specify: string;
@@ -213,7 +216,6 @@ interface PhysicalHealthRecord {
   body_build: string;
   signs_of_distress: string[];
   mood_behavior: string;
-  created_at: string;
   hemoglobin?: string;
   hematocrit?: string;
   rbc_count?: string;
@@ -254,18 +256,219 @@ interface PhysicalHealthRecord {
   hearing?: string;
 }
 
-const PhysicalHealthPage: NextPage = () => {
+const PhysicalHealthPage: React.FC = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <PhysicalHealthPageContent />
     </Suspense>
   );
 };
-const PhysicalHealthPageContent = () => {
+
+const PhysicalHealthPageContent = (): ReactElement => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");
   const { selectedNurse } = useSession();
+  const [selectedPatient, setSelectedPatient] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<PhysicalHealthRecord>({
+    id: "",
+    patient_name: "",
+    physician_name: "",
+    date_of_service: "",
+    created_at: "",
+    lab_results_url: "",
+    other_images_urls: [],
+    exercise_regularly: "",
+    medical_conditions: "",
+    medical_conditions_specify: "",
+    activities: [
+      { name: "Walking", does: false, frequency: "" },
+      { name: "Running", does: false, frequency: "" },
+      { name: "Bicycle", does: false, frequency: "" },
+      { name: "Stretching", does: false, frequency: "" },
+      { name: "Dancing", does: false, frequency: "" },
+    ],
+    posture: "",
+    cleanliness: "",
+    eyes_normal: false,
+    pale_conjunctiva: { present: false, severity: "" },
+    dry_eyes: { present: false, frequency: "" },
+    muscle_mass_normal: false,
+    loss_of_muscle_mass: "",
+    weakness: "",
+    localized_weakness: "",
+    associated_symptoms: [],
+    possible_causes: [],
+    height: "",
+    weight: "",
+    bmi: "",
+    body_build: "",
+    signs_of_distress: [],
+    mood_behavior: "",
+    hemoglobin: "",
+    hematocrit: "",
+    rbc_count: "",
+    wbc_count: "",
+    platelets_count: "",
+    sodium: "",
+    potassium: "",
+    calcium: "",
+    magnesium: "",
+    albumin: "",
+    globulin: "",
+    total_protein: "",
+    direct_bilirubin: "",
+    indirect_bilirubin: "",
+    total_bilirubin: "",
+    glucose: "",
+    urea: "",
+    creatinine: "",
+    cholesterol_total: "",
+    cholesterol_hdl: "",
+    cholesterol_ldl: "",
+    triglycerides: "",
+    hemoglobin_a1c: "",
+    oral_health: {
+      healthy: false,
+      foulOdor: false,
+      swollenGums: "",
+      bleedingGums: "",
+      mouthUlcers: "",
+    },
+    nasal_discharge: "",
+    mucus_color: "",
+    mucus_consistency: "",
+    nose_shape: "",
+    nasal_obstruction: "",
+    external_ear: [],
+    ear_canal: "",
+    hearing: "",
+  });
+  const [labResultsFile, setLabResultsFile] = useState<File | null>(null);
+  const [otherImagesFiles, setOtherImagesFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleLabResultsUpload = async (file: File) => {
+    try {
+      setIsUploading(true);
+      setError(null);
+
+      // Validate file type
+      const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error(
+          "Invalid file type. Please upload a JPEG, PNG, or PDF file."
+        );
+      }
+
+      // Validate file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        throw new Error("File size must be less than 5MB");
+      }
+
+      // Generate a unique file path
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${selectedPatient}-lab-results-${Date.now()}.${fileExt}`;
+      const filePath = `lab-results/${fileName}`;
+
+      // Upload file to Supabase storage
+      const { error: uploadError } = await supabase.storage
+        .from("tpr-sheets") // Changed from 'physical-health' to 'tpr-sheets'
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get the public URL
+      const {
+        data: { publicUrl },
+      } = supabase.storage
+        .from("tpr-sheets") // Changed from 'physical-health' to 'tpr-sheets'
+        .getPublicUrl(filePath);
+
+      // Update form data with the file URL
+      setFormData((prev) => ({
+        ...prev,
+        lab_results_url: publicUrl,
+      }));
+
+      // Show success message
+      alert("Lab results uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading lab results:", error);
+      setError(
+        error instanceof Error ? error.message : "Failed to upload lab results"
+      );
+      alert("Failed to upload lab results. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleOtherImagesUpload = async (files: File[]) => {
+    try {
+      setIsUploading(true);
+      setError(null);
+
+      const uploadedUrls: string[] = [];
+
+      for (const file of files) {
+        // Validate file type
+        const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+        if (!allowedTypes.includes(file.type)) {
+          throw new Error(
+            "Invalid file type. Please upload a JPEG, PNG, or PDF file."
+          );
+        }
+
+        // Validate file size (max 5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+          throw new Error("File size must be less than 5MB");
+        }
+
+        // Generate a unique file path
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${selectedPatient}-other-${Date.now()}-${file.name}`;
+        const filePath = `other-images/${fileName}`;
+
+        // Upload file to Supabase storage
+        const { error: uploadError } = await supabase.storage
+          .from("tpr-sheets") // Changed from 'physical-health' to 'tpr-sheets'
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        // Get the public URL
+        const {
+          data: { publicUrl },
+        } = supabase.storage
+          .from("tpr-sheets") // Changed from 'physical-health' to 'tpr-sheets'
+          .getPublicUrl(filePath);
+
+        uploadedUrls.push(publicUrl);
+      }
+
+      // Update form data with the file URLs
+      setFormData((prev) => ({
+        ...prev,
+        other_images_urls: [...prev.other_images_urls, ...uploadedUrls],
+      }));
+
+      // Show success message
+      alert("Images uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading other images:", error);
+      setError(
+        error instanceof Error ? error.message : "Failed to upload images"
+      );
+      alert("Failed to upload images. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const [patientInfo, setPatientInfo] = useState({
     fullName: "",
@@ -333,7 +536,6 @@ const PhysicalHealthPageContent = () => {
   }, [selectedNurse, patientName, router]);
 
   const [patients, setPatients] = useState<Array<{ full_name: string }>>([]);
-  const [selectedPatient, setSelectedPatient] = useState("");
 
   // Fetch all patients and patient info
   useEffect(() => {
@@ -514,139 +716,109 @@ const PhysicalHealthPageContent = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!patientName) {
-      alert("No patient selected");
-      return;
-    }
 
-    if (!selectedNurse) {
-      alert(
-        "No nurse selected. Please select a staff from the dashboard first."
-      );
+    if (!selectedPatient) {
+      alert("Please select a patient first");
       return;
     }
 
     try {
-      // Prepare the data for submission
-      const submissionData = {
-        full_name: decodeURIComponent(patientName),
-        physician_id: selectedNurse.id,
-        date_of_service: new Date().toISOString().split("T")[0],
-
+      const { error } = await supabase.from("physical_health_records").insert({
+        full_name: selectedPatient,
+        physician_id: selectedNurse?.id || "00000000-0000-0000-0000-000000000000",
+        date_of_service: new Date().toISOString(), // Use current date and time
         // Physical Activity Level
-        exercise_regularly: exerciseRegularly,
-        medical_conditions: medicalConditions,
-        medical_conditions_specify: medicalConditionsSpecify,
-        activities,
-
+        exercise_regularly: exerciseRegularly || null,
+        medical_conditions: medicalConditions || null,
+        medical_conditions_specify: medicalConditionsSpecify || null,
+        activities: activities || null,
         // General Appearance
-        posture,
-        cleanliness,
-
+        posture: posture || null,
+        cleanliness: cleanliness || null,
         // Physical Findings
-        eyes_normal: eyesNormal,
-        pale_conjunctiva: paleConjunctiva,
-        dry_eyes: dryEyes,
-        muscle_mass_normal: muscleMassNormal,
-        loss_of_muscle_mass: lossOfMuscleMass,
-        weakness,
-        localized_weakness: localizedWeakness,
-        associated_symptoms: associatedSymptoms,
-        possible_causes: possibleCauses,
-
-        // Lab Results - CBC
-        hemoglobin: labResults.cbc.hemoglobin,
-        hematocrit: labResults.cbc.hematocrit,
-        rbc_count: labResults.cbc.rbc,
-        wbc_count: labResults.cbc.wbc,
-        platelets_count: labResults.cbc.platelets,
-
+        eyes_normal: eyesNormal || null,
+        pale_conjunctiva: paleConjunctiva || null,
+        dry_eyes: dryEyes || null,
+        muscle_mass_normal: muscleMassNormal || null,
+        loss_of_muscle_mass: lossOfMuscleMass || null,
+        weakness: weakness || null,
+        localized_weakness: localizedWeakness || null,
+        associated_symptoms: associatedSymptoms || null,
+        possible_causes: possibleCauses || null,
+        // Lab Results - Complete Blood Count (CBC)
+        hemoglobin: labResults.cbc.hemoglobin || null,
+        hematocrit: labResults.cbc.hematocrit || null,
+        rbc_count: labResults.cbc.rbc || null,
+        wbc_count: labResults.cbc.wbc || null,
+        platelets_count: labResults.cbc.platelets || null,
         // Lab Results - Electrolytes
-        sodium: labResults.electrolytes.sodium,
-        potassium: labResults.electrolytes.potassium,
-        calcium: labResults.electrolytes.calcium,
-        magnesium: labResults.electrolytes.magnesium,
-
+        sodium: labResults.electrolytes.sodium || null,
+        potassium: labResults.electrolytes.potassium || null,
+        calcium: labResults.electrolytes.calcium || null,
+        magnesium: labResults.electrolytes.magnesium || null,
         // Lab Results - Protein and Nutrition
-        albumin: labResults.proteinNutrition.albumin,
-        globulin: labResults.proteinNutrition.globulin,
-        total_protein: labResults.proteinNutrition.totalProtein,
-        direct_bilirubin: labResults.proteinNutrition.directBilirubin,
-        indirect_bilirubin: labResults.proteinNutrition.indirectBilirubin,
-        total_bilirubin: labResults.proteinNutrition.totalBilirubin,
-
+        albumin: labResults.proteinNutrition.albumin || null,
+        globulin: labResults.proteinNutrition.globulin || null,
+        total_protein: labResults.proteinNutrition.totalProtein || null,
+        direct_bilirubin: labResults.proteinNutrition.directBilirubin || null,
+        indirect_bilirubin:
+          labResults.proteinNutrition.indirectBilirubin || null,
+        total_bilirubin: labResults.proteinNutrition.totalBilirubin || null,
         // Lab Results - Glucose and Metabolism
-        glucose: labResults.glucoseMetabolism.glucose,
-        urea: labResults.glucoseMetabolism.urea,
-        creatinine: labResults.glucoseMetabolism.creatinine,
-        cholesterol_total: labResults.glucoseMetabolism.cholesterolTotal,
-        cholesterol_hdl: labResults.glucoseMetabolism.cholesterolHDL,
-        cholesterol_ldl: labResults.glucoseMetabolism.cholesterolLDL,
-        triglycerides: labResults.glucoseMetabolism.triglycerides,
-        hemoglobin_a1c: labResults.glucoseMetabolism.hemoglobinA1C,
-
+        glucose: labResults.glucoseMetabolism.glucose || null,
+        urea: labResults.glucoseMetabolism.urea || null,
+        creatinine: labResults.glucoseMetabolism.creatinine || null,
+        cholesterol_total:
+          labResults.glucoseMetabolism.cholesterolTotal || null,
+        cholesterol_hdl: labResults.glucoseMetabolism.cholesterolHDL || null,
+        cholesterol_ldl: labResults.glucoseMetabolism.cholesterolLDL || null,
+        triglycerides: labResults.glucoseMetabolism.triglycerides || null,
+        hemoglobin_a1c: labResults.glucoseMetabolism.hemoglobinA1C || null,
         // Anthropometric Data
-        height,
-        weight,
-        bmi,
-        body_build: bodyBuild,
-        signs_of_distress: signsOfDistress,
-        mood_behavior: moodBehavior,
-
+        height: height || null,
+        weight: weight || null,
+        bmi: bmi || null,
+        body_build: bodyBuild || null,
+        signs_of_distress: signsOfDistress || null,
+        mood_behavior: moodBehavior || null,
         // Oral Health
-        oral_health: oralHealth,
-
+        oral_health: oralHealth || null,
         // Nose
-        nasal_discharge: nasalDischarge,
-        mucus_color: mucusColor,
-        mucus_consistency: mucusConsistency,
-        nose_shape: noseShape,
-        nasal_obstruction: nasalObstruction,
-
+        nasal_discharge: nasalDischarge || null,
+        mucus_color: mucusColor || null,
+        mucus_consistency: mucusConsistency || null,
+        nose_shape: noseShape || null,
+        nasal_obstruction: nasalObstruction || null,
         // Ears
-        external_ear: externalEar,
-        ear_canal: earCanal,
-        hearing,
-      };
+        external_ear: externalEar || null,
+        ear_canal: earCanal || null,
+        hearing: hearing || null,
+        // File uploads
+        lab_results_url: formData.lab_results_url || null,
+        other_images_urls: formData.other_images_urls || null,
+      });
 
-      console.log("Submitting data:", submissionData);
+      if (error) throw error;
 
-      const { data, error: upsertError } = await supabase
-        .from("physical_health_records")
-        .upsert(submissionData)
-        .select();
-
-      if (upsertError) {
-        console.error("Supabase error:", upsertError);
-        throw upsertError;
-      }
-
-      console.log("Success response:", data);
-      alert("Physical health assessment saved successfully!");
+      alert("Record saved successfully!");
+      // Reset all form fields
+      handleNewRecord();
+      // Refresh the history records
+      await fetchHistoryRecords();
     } catch (error) {
-      console.error("Error saving physical health assessment:", error);
-      if (error instanceof Error) {
-        console.error("Error details:", error.message);
-      }
-      alert("Error saving physical health assessment. Please try again.");
+      console.error("Error saving record:", error);
+      alert("Failed to save record. Please try again.");
     }
   };
 
   // Add these functions
   const calculateBMI = (height: string, weight: string) => {
-    if (!height || !weight || !patientInfo.age) return "";
+    if (!height || !weight) return "";
 
     const heightInMeters = parseFloat(height) / 100;
     const weightInKg = parseFloat(weight);
-    const ageNum = parseInt(patientInfo.age);
 
-    if (
-      isNaN(heightInMeters) ||
-      isNaN(weightInKg) ||
-      heightInMeters <= 0 ||
-      isNaN(ageNum)
-    )
-      return "";
+    if (isNaN(heightInMeters) || isNaN(weightInKg) || heightInMeters <= 0) return "";
 
     const bmi = weightInKg / (heightInMeters * heightInMeters);
     return bmi.toFixed(1);
@@ -658,7 +830,7 @@ const PhysicalHealthPageContent = () => {
       const newBMI = calculateBMI(height, weight);
       setBmi(newBMI);
     }
-  }, [height, weight, patientInfo.age]);
+  }, [height, weight]);
 
   const getBMIStatus = (bmi: string) => {
     if (!bmi || !patientInfo.age || !patientInfo.gender)
@@ -784,30 +956,40 @@ const PhysicalHealthPageContent = () => {
   const handleViewRecord = (record: PhysicalHealthRecord) => {
     setSelectedRecord(record);
 
-    // Set form data based on the selected record
-    setExerciseRegularly(record.exercise_regularly);
-    setMedicalConditions(record.medical_conditions);
-    setMedicalConditionsSpecify(record.medical_conditions_specify);
-    setActivities(record.activities);
-    setPosture(record.posture);
-    setCleanliness(record.cleanliness);
-    setEyesNormal(record.eyes_normal);
-    setPaleConjunctiva(record.pale_conjunctiva);
-    setDryEyes(record.dry_eyes);
-    setMuscleMassNormal(record.muscle_mass_normal);
-    setLossOfMuscleMass(record.loss_of_muscle_mass);
-    setWeakness(record.weakness);
-    setLocalizedWeakness(record.localized_weakness);
-    setAssociatedSymptoms(record.associated_symptoms);
-    setPossibleCauses(record.possible_causes);
-    setHeight(record.height);
-    setWeight(record.weight);
-    setBmi(record.bmi);
-    setBodyBuild(record.body_build);
-    setSignsOfDistress(record.signs_of_distress);
-    setMoodBehavior(record.mood_behavior);
+    // Update all the individual state variables
+    setExerciseRegularly(record.exercise_regularly || "");
+    setMedicalConditions(record.medical_conditions || "");
+    setMedicalConditionsSpecify(record.medical_conditions_specify || "");
+    setActivities(
+      record.activities || [
+        { name: "Walking", does: false, frequency: "" },
+        { name: "Running", does: false, frequency: "" },
+        { name: "Bicycle", does: false, frequency: "" },
+        { name: "Stretching", does: false, frequency: "" },
+        { name: "Dancing", does: false, frequency: "" },
+      ]
+    );
+    setPosture(record.posture || "");
+    setCleanliness(record.cleanliness || "");
+    setEyesNormal(record.eyes_normal || false);
+    setPaleConjunctiva(
+      record.pale_conjunctiva || { present: false, severity: "" }
+    );
+    setDryEyes(record.dry_eyes || { present: false, frequency: "" });
+    setMuscleMassNormal(record.muscle_mass_normal || false);
+    setLossOfMuscleMass(record.loss_of_muscle_mass || "");
+    setWeakness(record.weakness || "");
+    setLocalizedWeakness(record.localized_weakness || "");
+    setAssociatedSymptoms(record.associated_symptoms || []);
+    setPossibleCauses(record.possible_causes || []);
+    setHeight(record.height || "");
+    setWeight(record.weight || "");
+    setBmi(record.bmi || "");
+    setBodyBuild(record.body_build || "");
+    setSignsOfDistress(record.signs_of_distress || []);
+    setMoodBehavior(record.mood_behavior || "");
 
-    // Set lab results
+    // Update lab results
     setLabResults({
       cbc: {
         hemoglobin: record.hemoglobin || "",
@@ -842,10 +1024,10 @@ const PhysicalHealthPageContent = () => {
       },
     });
 
-    // Set oral health
+    // Update oral health
     setOralHealth(
       record.oral_health || {
-        healthy: true,
+        healthy: false,
         foulOdor: false,
         swollenGums: "",
         bleedingGums: "",
@@ -853,22 +1035,46 @@ const PhysicalHealthPageContent = () => {
       }
     );
 
-    // Set nose data
+    // Update nose data
     setNasalDischarge(record.nasal_discharge || "");
     setMucusColor(record.mucus_color || "");
     setMucusConsistency(record.mucus_consistency || "");
     setNoseShape(record.nose_shape || "");
     setNasalObstruction(record.nasal_obstruction || "");
 
-    // Set ear data
+    // Update ear data
     setExternalEar(record.external_ear || []);
     setEarCanal(record.ear_canal || "");
     setHearing(record.hearing || "");
 
+    // Update form data
+    setFormData({
+      ...record,
+      lab_results_url: record.lab_results_url || "",
+      other_images_urls: record.other_images_urls || [],
+      activities: record.activities || [
+        { name: "Walking", does: false, frequency: "" },
+        { name: "Running", does: false, frequency: "" },
+        { name: "Bicycle", does: false, frequency: "" },
+        { name: "Stretching", does: false, frequency: "" },
+        { name: "Dancing", does: false, frequency: "" },
+      ],
+      associated_symptoms: record.associated_symptoms || [],
+      possible_causes: record.possible_causes || [],
+      signs_of_distress: record.signs_of_distress || [],
+      external_ear: record.external_ear || [],
+      oral_health: {
+        healthy: record.oral_health?.healthy || false,
+        foulOdor: record.oral_health?.foulOdor || false,
+        swollenGums: record.oral_health?.swollenGums || "",
+        bleedingGums: record.oral_health?.bleedingGums || "",
+        mouthUlcers: record.oral_health?.mouthUlcers || "",
+      },
+    });
+
     // Scroll to the top of the form
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
   const handleNewRecord = () => {
     // Clear all form fields
     setExerciseRegularly(""); // Reset to unselected
@@ -993,6 +1199,64 @@ const PhysicalHealthPageContent = () => {
     } catch (error) {
       console.error("Error deleting record:", error);
       alert("Error deleting record. Please try again.");
+    }
+  };
+
+  const handleDownloadFile = async (
+    url: string | undefined,
+    fileName: string
+  ) => {
+    if (!url) {
+      alert("No file URL provided");
+      return;
+    }
+
+    try {
+      setIsDownloading(true);
+
+      // Extract the file path from the URL
+      // The URL format is typically: https://<domain>/storage/v1/object/public/<bucket>/<path>
+      const pathMatch = url.match(/public\/([^/]+)\/(.+)$/);
+      if (!pathMatch) {
+        throw new Error("Invalid file URL format");
+      }
+
+      const [, bucket, filePath] = pathMatch;
+
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .download(filePath);
+
+      if (error) {
+        console.error("Storage error:", error);
+        throw new Error(`Failed to download file: ${error.message}`);
+      }
+
+      if (!data) {
+        throw new Error("No file data received");
+      }
+
+      // Create a download URL for the blob
+      const blob = new Blob([data], { type: data.type });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+
+      alert("File downloaded successfully!");
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Error downloading file. Please try again."
+      );
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -2332,7 +2596,13 @@ const PhysicalHealthPageContent = () => {
                     <input
                       type="number"
                       value={height}
-                      onChange={(e) => setHeight(e.target.value)}
+                      onChange={(e) => {
+                        setHeight(e.target.value);
+                        if (e.target.value && weight) {
+                          const newBMI = calculateBMI(e.target.value, weight);
+                          setBmi(newBMI);
+                        }
+                      }}
                       min="0"
                       step="0.1"
                       className="w-full px-3 py-2 border rounded"
@@ -2346,7 +2616,13 @@ const PhysicalHealthPageContent = () => {
                     <input
                       type="number"
                       value={weight}
-                      onChange={(e) => setWeight(e.target.value)}
+                      onChange={(e) => {
+                        setWeight(e.target.value);
+                        if (e.target.value && height) {
+                          const newBMI = calculateBMI(height, e.target.value);
+                          setBmi(newBMI);
+                        }
+                      }}
                       min="0"
                       step="0.1"
                       className="w-full px-3 py-2 border rounded"
@@ -2748,7 +3024,84 @@ const PhysicalHealthPageContent = () => {
                 </div>
               </div>
 
-              <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4">
+              <div className="space-y-4 p-6">
+                <h2 className="text-xl font-semibold text-blue-700 mb-4 pb-2 border-b border-gray-200">
+                  Laboratory Results
+                </h2>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium">Laboratory Results</h3>
+                  <p className="text-sm text-gray-500">
+                    Kindly upload the photo of the patient's laboratory results (Maximum file size: 5MB)
+                  </p>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Upload Lab Results (JPG, PNG, PDF)
+                    </label>
+                    <input
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.pdf"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setLabResultsFile(file);
+                          handleLabResultsUpload(file);
+                        }
+                      }}
+                      className="block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-md file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-blue-50 file:text-blue-700
+                        hover:file:bg-blue-100"
+                      disabled={isUploading}
+                    />
+                    {isUploading && (
+                      <p className="mt-2 text-sm text-gray-500">Uploading...</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-medium">
+                      Other Essential Images
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Upload here other essential images, if necessary: (eg.
+                      Plates, etc)
+                    </p>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Other Essential Images
+                      </label>
+                      <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png"
+                        multiple
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          if (files.length > 0) {
+                            setOtherImagesFiles(files);
+                            handleOtherImagesUpload(files);
+                          }
+                        }}
+                        className="block w-full text-sm text-gray-500
+                          file:mr-4 file:py-2 file:px-4
+                          file:rounded-md file:border-0
+                          file:text-sm file:font-semibold
+                          file:bg-blue-50 file:text-blue-700
+                          hover:file:bg-blue-100"
+                        disabled={isUploading}
+                      />
+                      {isUploading && (
+                        <p className="mt-2 text-sm text-gray-500">
+                          Uploading...
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-6 flex justify-end space-x-4 mb-6">
                 <button
                   type="button"
                   className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
@@ -2765,82 +3118,195 @@ const PhysicalHealthPageContent = () => {
               </div>
             </form>
           </div>
-        </div>
-
-        {/* History Table */}
-        {historyRecords.length > 0 && (
-          <div className="mt-8 bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="bg-indigo-700 px-8 py-5 flex justify-between items-center">
-              <h2 className="text-2xl font-semibold text-white">
-                Physical Health History
-              </h2>
-              <button
-                onClick={handleNewRecord}
-                className="px-4 py-2 bg-white text-indigo-700 rounded-md hover:bg-indigo-50 transition-colors"
-              >
-                New Record
-              </button>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Nurse
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Time
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {historyRecords.map((record) => (
-                    <tr
-                      key={record.id}
-                      className={
-                        selectedRecord?.id === record.id ? "bg-indigo-50" : ""
-                      }
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Date(record.created_at).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {selectedNurse
-                          ? `${selectedNurse.full_name}, ${selectedNurse.position}`
-                          : "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Date(record.created_at).toLocaleTimeString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => handleViewRecord(record)}
-                            className="text-indigo-600 hover:text-indigo-900"
-                          >
-                            View Record
-                          </button>
-                          <button
-                            onClick={() => handleDeleteRecord(record.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
+          {/* History Table */}
+          {historyRecords.length > 0 && (
+            <div className="px-8 py-6 border-t border-gray-200">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Assessment History
+                </h2>
+                <button
+                  onClick={handleNewRecord}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                >
+                  New Record
+                </button>
+              </div>
+              <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-indigo-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
+                        Date & Time
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
+                        Physician
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
+                        Files
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {historyRecords.map((record) => (
+                      <tr key={record.id}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {new Date(record.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                          })}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {record.physician_name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="flex space-x-2">
+                            {record.lab_results_url && (
+                              <button
+                                onClick={() => {
+                                  const fileName = `lab-results-${record.patient_name}-${new Date(
+                                    record.date_of_service
+                                  ).toISOString()}`;
+                                  handleDownloadFile(record.lab_results_url, fileName);
+                                }}
+                                disabled={isDownloading}
+                                className="flex items-center text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                              >
+                                {isDownloading ? (
+                                  <>
+                                    <svg
+                                      className="animate-spin h-4 w-4 mr-2"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                      ></circle>
+                                      <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                      ></path>
+                                    </svg>
+                                    Downloading...
+                                  </>
+                                ) : (
+                                  <>
+                                    <svg
+                                      className="h-4 w-4 mr-2"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                      />
+                                    </svg>
+                                    Lab Results
+                                  </>
+                                )}
+                              </button>
+                            )}
+                            {record.other_images_urls && record.other_images_urls.length > 0 && (
+                              <button
+                                onClick={() => {
+                                  const url = record.other_images_urls[0];
+                                  const fileName = `other-images-${record.patient_name}-${new Date(
+                                    record.date_of_service
+                                  ).toISOString()}`;
+                                  handleDownloadFile(url, fileName);
+                                }}
+                                disabled={isDownloading}
+                                className="flex items-center text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                              >
+                                {isDownloading ? (
+                                  <>
+                                    <svg
+                                      className="animate-spin h-4 w-4 mr-2"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                      ></circle>
+                                      <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                      ></path>
+                                    </svg>
+                                    Downloading...
+                                  </>
+                                ) : (
+                                  <>
+                                    <svg
+                                      className="h-4 w-4 mr-2"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke="currentColor"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                      />
+                                    </svg>
+                                    Other Images
+                                  </>
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleViewRecord(record)}
+                              className="text-blue-600 hover:text-blue-800"
+                            >
+                              View
+                            </button>
+                            <button
+                              onClick={() => handleDeleteRecord(record.id)}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

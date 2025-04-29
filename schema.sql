@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS nurses (
 -- Create patients table
 CREATE TABLE IF NOT EXISTS patients (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    patient_number VARCHAR(4) UNIQUE,
     full_name VARCHAR(255) NOT NULL UNIQUE,
     date_of_birth DATE NOT NULL,
     age INTEGER,
@@ -124,6 +125,16 @@ CREATE TABLE IF NOT EXISTS health_history (
     past_surgical_history JSONB DEFAULT '{
         "hadSurgery": "",
         "surgeries": []
+    }',
+    family_history JSONB DEFAULT '{
+        "diabetes": false,
+        "hypertension": false,
+        "asthma": false,
+        "heartDisease": false,
+        "cancer": false,
+        "stroke": false,
+        "other": "",
+        "otherDetails": ""
     }',
     recent_hospitalization TEXT,
     health_maintenance JSONB DEFAULT '{
@@ -1013,6 +1024,16 @@ CREATE TABLE IF NOT EXISTS nurses_notes_records (
     assessment_time_frame VARCHAR(50),
     documentation_method VARCHAR(50),
     
+    -- Doctor's Progress Notes (stored as JSONB array)
+    progress_notes JSONB DEFAULT '[]',
+    
+    -- Discharge Plan
+    discharge_plan JSONB DEFAULT '{
+        "assessment_and_goals": "",
+        "discharge_destination": "",
+        "medication_management": ""
+    }',
+    
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -1327,4 +1348,81 @@ DO $$ BEGIN
         EXECUTE FUNCTION update_updated_at_column();
 EXCEPTION
     WHEN duplicate_object THEN null;
-END $$; 
+END $$;
+
+-- Create tpr_input_output_records table
+CREATE TABLE IF NOT EXISTS tpr_input_output_records (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    full_name VARCHAR(255) NOT NULL REFERENCES patients(full_name) ON DELETE CASCADE,
+    physician_id UUID REFERENCES nurses(id),
+    physician_name VARCHAR(255) NOT NULL,
+    date_of_service DATE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    tpr_sheet_url TEXT,
+    new_food_today BOOLEAN DEFAULT FALSE,
+    fiber_intake TEXT,
+    fluid_intake TEXT,
+    parenteral TEXT,
+    water_intake TEXT,
+    urine_output TEXT,
+    stool_date_time TIMESTAMP WITH TIME ZONE,
+    stool_consistency TEXT,
+    stool_color TEXT,
+    stool_amount TEXT,
+    stool_straining BOOLEAN DEFAULT FALSE,
+    stool_pain BOOLEAN DEFAULT FALSE,
+    stool_blood_mucus BOOLEAN DEFAULT FALSE,
+    stool_odor TEXT,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create indexes for TPR input output records
+DO $$ BEGIN
+    CREATE INDEX idx_tpr_input_output_records_full_name ON tpr_input_output_records(full_name);
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE INDEX idx_tpr_input_output_records_date ON tpr_input_output_records(date_of_service);
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE INDEX idx_tpr_input_output_records_physician ON tpr_input_output_records(physician_id);
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
+
+-- Create trigger for updated_at
+DO $$ BEGIN
+    CREATE TRIGGER update_tpr_input_output_records_updated_at
+        BEFORE UPDATE ON tpr_input_output_records
+        FOR EACH ROW
+        EXECUTE FUNCTION update_updated_at_column();
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+-- Create storage bucket for TPR sheets
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('tpr-sheets', 'tpr-sheets', false)
+ON CONFLICT (id) DO NOTHING;
+
+-- Create storage policies for TPR sheets bucket
+CREATE POLICY "Allow authenticated users to upload TPR sheets"
+ON storage.objects FOR INSERT TO authenticated
+WITH CHECK (bucket_id = 'tpr-sheets');
+
+CREATE POLICY "Allow authenticated users to view their own TPR sheets"
+ON storage.objects FOR SELECT TO authenticated
+USING (bucket_id = 'tpr-sheets');
+
+CREATE POLICY "Allow authenticated users to update their own TPR sheets"
+ON storage.objects FOR UPDATE TO authenticated
+USING (bucket_id = 'tpr-sheets');
+
+CREATE POLICY "Allow authenticated users to delete their own TPR sheets"
+ON storage.objects FOR DELETE TO authenticated
+USING (bucket_id = 'tpr-sheets'); 

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useSession } from "@/app/context/SessionContext";
 import { Suspense } from "react";
+import { cn } from "@/lib/utils";
 
 interface FormData {
   clientName: string;
@@ -28,6 +29,16 @@ interface FormData {
     fax: boolean;
     hardCopy: boolean;
   };
+  progressNotes: Array<{
+    id: string;
+    date: string;
+    note: string;
+  }>;
+  dischargePlan: {
+    assessmentAndGoals: string;
+    dischargeDestination: string;
+    medicationManagement: string;
+  };
 }
 
 interface NursesNotesRecord {
@@ -41,6 +52,17 @@ interface NursesNotesRecord {
   assessment_time_frame: string;
   risk_level: string;
   documentation_method: string;
+  progress_notes: Array<{
+    id: string;
+    date: string;
+    note: string;
+  }>;
+  updated_at: string;
+  discharge_plan: {
+    assessment_and_goals: string;
+    discharge_destination: string;
+    medication_management: string;
+  };
 }
 
 const NurseNotesPage: NextPage = () => {
@@ -50,7 +72,8 @@ const NurseNotesPage: NextPage = () => {
     </Suspense>
   );
 };
-const NurseNotesPageContent = () => {
+
+const NurseNotesPageContent: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientName = searchParams.get("patient");
@@ -77,6 +100,12 @@ const NurseNotesPageContent = () => {
       email: false,
       fax: false,
       hardCopy: true,
+    },
+    progressNotes: [],
+    dischargePlan: {
+      assessmentAndGoals: "",
+      dischargeDestination: "",
+      medicationManagement: "",
     },
   });
 
@@ -190,6 +219,12 @@ const NurseNotesPageContent = () => {
         fax: record.documentation_method?.includes("fax") || false,
         hardCopy: record.documentation_method?.includes("hardCopy") || false,
       },
+      progressNotes: record.progress_notes || [],
+      dischargePlan: {
+        assessmentAndGoals: record.discharge_plan?.assessment_and_goals || "",
+        dischargeDestination: record.discharge_plan?.discharge_destination || "",
+        medicationManagement: record.discharge_plan?.medication_management || ""
+      }
     }));
   };
 
@@ -236,6 +271,7 @@ const NurseNotesPageContent = () => {
         fax: false,
         hardCopy: true,
       },
+      progressNotes: [],
     }));
   };
 
@@ -250,6 +286,36 @@ const NurseNotesPageContent = () => {
     const patientName = e.target.value;
     setSelectedPatient(patientName);
     router.push(`/nurses-notes?patient=${encodeURIComponent(patientName)}`);
+  };
+
+  const handleAddProgressNote = () => {
+    setFormData(prev => ({
+      ...prev,
+      progressNotes: [
+        ...prev.progressNotes,
+        {
+          id: crypto.randomUUID(),
+          date: new Date().toISOString().split('T')[0],
+          note: '',
+        }
+      ]
+    }));
+  };
+
+  const handleRemoveProgressNote = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      progressNotes: prev.progressNotes.filter(note => note.id !== id)
+    }));
+  };
+
+  const handleProgressNoteChange = (id: string, field: 'date' | 'note', value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      progressNotes: prev.progressNotes.map(note => 
+        note.id === id ? { ...note, [field]: value } : note
+      )
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -298,6 +364,12 @@ const NurseNotesPageContent = () => {
       assessment_time_frame: assessmentTimeFrameStr || null,
       risk_level: riskLevelStr || null,
       documentation_method: documentationMethodStr || null,
+      progress_notes: formData.progressNotes,
+      discharge_plan: {
+        assessment_and_goals: formData.dischargePlan.assessmentAndGoals,
+        discharge_destination: formData.dischargePlan.dischargeDestination,
+        medication_management: formData.dischargePlan.medicationManagement
+      }
     };
 
     try {
@@ -315,23 +387,62 @@ const NurseNotesPageContent = () => {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    if (type === "checkbox") {
-      const [parent, child] = name.split(".");
-      setFormData((prev) => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent as keyof typeof prev],
-          [child]: checked,
-        },
-      }));
-    } else {
-      setFormData((prev) => ({
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value, type } = e.target;
+    const checked = type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
+
+    setFormData((prev) => {
+      if (name.startsWith("assessmentTimeFrame.")) {
+        const field = name.split(".")[1];
+        return {
+          ...prev,
+          assessmentTimeFrame: {
+            ...prev.assessmentTimeFrame,
+            [field]: checked,
+          },
+        };
+      }
+
+      if (name.startsWith("riskLevel.")) {
+        const field = name.split(".")[1];
+        return {
+          ...prev,
+          riskLevel: {
+            ...prev.riskLevel,
+            [field]: checked,
+          },
+        };
+      }
+
+      if (name.startsWith("documentationMethod.")) {
+        const field = name.split(".")[1];
+        return {
+          ...prev,
+          documentationMethod: {
+            ...prev.documentationMethod,
+            [field]: checked,
+          },
+        };
+      }
+
+      if (name.startsWith("dischargePlan.")) {
+        const field = name.split(".")[1];
+        return {
+          ...prev,
+          dischargePlan: {
+            ...prev.dischargePlan,
+            [field]: value,
+          },
+        };
+      }
+
+      return {
         ...prev,
         [name]: value,
-      }));
-    }
+      };
+    });
   };
 
   return (
@@ -676,6 +787,139 @@ const NurseNotesPageContent = () => {
                 </div>
               </section>
 
+              {/* Discharge Plan Section */}
+              <div className="mt-8">
+                <h2 className="text-xl font-semibold mb-4">Discharge Plan</h2>
+                
+                <div className="space-y-6">
+                  {/* Assessment and Goals */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Assessment and Goals
+                    </label>
+                    <p className="text-sm text-gray-500 mb-2">
+                      Summarize the patient's medical condition, functional abilities, support systems, and recovery goals.
+                    </p>
+                    <textarea
+                      name="dischargePlan.assessmentAndGoals"
+                      value={formData.dischargePlan.assessmentAndGoals}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                      rows={4}
+                      placeholder="Enter assessment and goals..."
+                    />
+                  </div>
+
+                  {/* Discharge Destination */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Discharge Destination
+                    </label>
+                    <p className="text-sm text-gray-500 mb-2">
+                      Specify whether the patient will be discharged to their home or another healthcare facility.
+                    </p>
+                    <textarea
+                      name="dischargePlan.dischargeDestination"
+                      value={formData.dischargePlan.dischargeDestination}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                      rows={3}
+                      placeholder="Enter discharge destination..."
+                    />
+                  </div>
+
+                  {/* Medication Management */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Medication Management
+                    </label>
+                    <p className="text-sm text-gray-500 mb-2">
+                      List the patient's prescribed medications and dosages, and provide instructions for proper administration.
+                    </p>
+                    <textarea
+                      name="dischargePlan.medicationManagement"
+                      value={formData.dischargePlan.medicationManagement}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                      rows={4}
+                      placeholder="Enter medication management details..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Doctor's Progress Note Section */}
+              <div className="bg-white rounded-lg shadow mt-8">
+                <div className="p-4 border-b flex justify-between items-center">
+                  <h2 className="text-lg font-semibold">Doctor&apos;s Progress Notes</h2>
+                  <button
+                    type="button"
+                    onClick={handleAddProgressNote}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                  >
+                    Add Progress Note
+                  </button>
+                </div>
+                <div className="p-6">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                            Date
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                            Progress Note
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {formData.progressNotes.map((note) => (
+                          <tr key={note.id}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <input
+                                type="date"
+                                value={note.date}
+                                onChange={(e) => handleProgressNoteChange(note.id, 'date', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                              />
+                            </td>
+                            <td className="px-6 py-4">
+                              <textarea
+                                value={note.note}
+                                onChange={(e) => handleProgressNoteChange(note.id, 'note', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                rows={3}
+                                placeholder="Enter progress note"
+                              />
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveProgressNote(note.id)}
+                                className="text-red-600 hover:text-red-900"
+                              >
+                                Remove
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                        {formData.progressNotes.length === 0 && (
+                          <tr>
+                            <td colSpan={3} className="px-6 py-4 text-center text-gray-500">
+                              No progress notes added yet. Click "Add Progress Note" to add one.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
               <div className="border-t border-gray-200 pt-8 flex justify-end space-x-4 mb-4">
                 <button
                   type="button"
@@ -769,4 +1013,4 @@ const NurseNotesPageContent = () => {
   );
 };
 
-export default NurseNotesPage;
+export default NurseNotesPageContent;
