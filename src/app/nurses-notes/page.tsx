@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useSession } from "@/app/context/SessionContext";
 import { Suspense } from "react";
-import { cn } from "@/lib/utils";
 
 interface FormData {
   clientName: string;
@@ -65,13 +64,15 @@ interface NursesNotesRecord {
   };
 }
 
-const NurseNotesPage: NextPage = () => {
+export default function NursesNotesWrapper() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <NurseNotesPageContent />
     </Suspense>
   );
-};
+}
+
+
 
 const NurseNotesPageContent: React.FC = () => {
   const router = useRouter();
@@ -222,9 +223,11 @@ const NurseNotesPageContent: React.FC = () => {
       progressNotes: record.progress_notes || [],
       dischargePlan: {
         assessmentAndGoals: record.discharge_plan?.assessment_and_goals || "",
-        dischargeDestination: record.discharge_plan?.discharge_destination || "",
-        medicationManagement: record.discharge_plan?.medication_management || ""
-      }
+        dischargeDestination:
+          record.discharge_plan?.discharge_destination || "",
+        medicationManagement:
+          record.discharge_plan?.medication_management || "",
+      },
     }));
   };
 
@@ -289,32 +292,36 @@ const NurseNotesPageContent: React.FC = () => {
   };
 
   const handleAddProgressNote = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       progressNotes: [
         ...prev.progressNotes,
         {
           id: crypto.randomUUID(),
-          date: new Date().toISOString().split('T')[0],
-          note: '',
-        }
-      ]
+          date: new Date().toISOString().split("T")[0],
+          note: "",
+        },
+      ],
     }));
   };
 
   const handleRemoveProgressNote = (id: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      progressNotes: prev.progressNotes.filter(note => note.id !== id)
+      progressNotes: prev.progressNotes.filter((note) => note.id !== id),
     }));
   };
 
-  const handleProgressNoteChange = (id: string, field: 'date' | 'note', value: string) => {
-    setFormData(prev => ({
+  const handleProgressNoteChange = (
+    id: string,
+    field: "date" | "note",
+    value: string
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      progressNotes: prev.progressNotes.map(note => 
+      progressNotes: prev.progressNotes.map((note) =>
         note.id === id ? { ...note, [field]: value } : note
-      )
+      ),
     }));
   };
 
@@ -368,8 +375,8 @@ const NurseNotesPageContent: React.FC = () => {
       discharge_plan: {
         assessment_and_goals: formData.dischargePlan.assessmentAndGoals,
         discharge_destination: formData.dischargePlan.dischargeDestination,
-        medication_management: formData.dischargePlan.medicationManagement
-      }
+        medication_management: formData.dischargePlan.medicationManagement,
+      },
     };
 
     try {
@@ -388,10 +395,13 @@ const NurseNotesPageContent: React.FC = () => {
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value, type } = e.target;
-    const checked = type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
+    const checked =
+      type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
 
     setFormData((prev) => {
       if (name.startsWith("assessmentTimeFrame.")) {
@@ -790,7 +800,7 @@ const NurseNotesPageContent: React.FC = () => {
               {/* Discharge Plan Section */}
               <div className="mt-8">
                 <h2 className="text-xl font-semibold mb-4">Discharge Plan</h2>
-                
+
                 <div className="space-y-6">
                   {/* Assessment and Goals */}
                   <div>
@@ -798,7 +808,8 @@ const NurseNotesPageContent: React.FC = () => {
                       Assessment and Goals
                     </label>
                     <p className="text-sm text-gray-500 mb-2">
-                      Summarize the patient's medical condition, functional abilities, support systems, and recovery goals.
+                      Summarize the patient's medical condition, functional
+                      abilities, support systems, and recovery goals.
                     </p>
                     <textarea
                       name="dischargePlan.assessmentAndGoals"
@@ -816,7 +827,8 @@ const NurseNotesPageContent: React.FC = () => {
                       Discharge Destination
                     </label>
                     <p className="text-sm text-gray-500 mb-2">
-                      Specify whether the patient will be discharged to their home or another healthcare facility.
+                      Specify whether the patient will be discharged to their
+                      home or another healthcare facility.
                     </p>
                     <textarea
                       name="dischargePlan.dischargeDestination"
@@ -834,7 +846,8 @@ const NurseNotesPageContent: React.FC = () => {
                       Medication Management
                     </label>
                     <p className="text-sm text-gray-500 mb-2">
-                      List the patient's prescribed medications and dosages, and provide instructions for proper administration.
+                      List the patient's prescribed medications and dosages, and
+                      provide instructions for proper administration.
                     </p>
                     <textarea
                       name="dischargePlan.medicationManagement"
@@ -851,7 +864,9 @@ const NurseNotesPageContent: React.FC = () => {
               {/* Doctor's Progress Note Section */}
               <div className="bg-white rounded-lg shadow mt-8">
                 <div className="p-4 border-b flex justify-between items-center">
-                  <h2 className="text-lg font-semibold">Doctor&apos;s Progress Notes</h2>
+                  <h2 className="text-lg font-semibold">
+                    Doctor&apos;s Progress Notes
+                  </h2>
                   <button
                     type="button"
                     onClick={handleAddProgressNote}
@@ -883,14 +898,26 @@ const NurseNotesPageContent: React.FC = () => {
                               <input
                                 type="date"
                                 value={note.date}
-                                onChange={(e) => handleProgressNoteChange(note.id, 'date', e.target.value)}
+                                onChange={(e) =>
+                                  handleProgressNoteChange(
+                                    note.id,
+                                    "date",
+                                    e.target.value
+                                  )
+                                }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                               />
                             </td>
                             <td className="px-6 py-4">
                               <textarea
                                 value={note.note}
-                                onChange={(e) => handleProgressNoteChange(note.id, 'note', e.target.value)}
+                                onChange={(e) =>
+                                  handleProgressNoteChange(
+                                    note.id,
+                                    "note",
+                                    e.target.value
+                                  )
+                                }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                 rows={3}
                                 placeholder="Enter progress note"
@@ -899,7 +926,9 @@ const NurseNotesPageContent: React.FC = () => {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <button
                                 type="button"
-                                onClick={() => handleRemoveProgressNote(note.id)}
+                                onClick={() =>
+                                  handleRemoveProgressNote(note.id)
+                                }
                                 className="text-red-600 hover:text-red-900"
                               >
                                 Remove
@@ -909,8 +938,12 @@ const NurseNotesPageContent: React.FC = () => {
                         ))}
                         {formData.progressNotes.length === 0 && (
                           <tr>
-                            <td colSpan={3} className="px-6 py-4 text-center text-gray-500">
-                              No progress notes added yet. Click "Add Progress Note" to add one.
+                            <td
+                              colSpan={3}
+                              className="px-6 py-4 text-center text-gray-500"
+                            >
+                              No progress notes added yet. Click "Add Progress
+                              Note" to add one.
                             </td>
                           </tr>
                         )}
@@ -1012,5 +1045,3 @@ const NurseNotesPageContent: React.FC = () => {
     </div>
   );
 };
-
-export default NurseNotesPageContent;
